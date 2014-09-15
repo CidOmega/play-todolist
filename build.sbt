@@ -1,4 +1,4 @@
-name := """Play-ToDoList"""
+name := """play-todolist"""
 
 version := "1.0-SNAPSHOT"
 
