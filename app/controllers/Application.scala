@@ -45,7 +45,7 @@ object Application extends Controller
             label =>
             {
                Task.create(label)
-               Redirect(routes.Application.tasks)
+               Redirect(routes.Application.ui)
             }
          )
    }
@@ -54,7 +54,7 @@ object Application extends Controller
    def deleteTask(id: Long) = Action
    {
       Task.delete(id)
-      Redirect(routes.Application.tasks)
+      Redirect(routes.Application.ui)
    }
 
 
