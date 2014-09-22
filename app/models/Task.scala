@@ -4,6 +4,7 @@ import play.api.db._
 import play.api.Play.current
 import anorm._
 import anorm.SqlParser._
+import play.api.libs.json._
 
 case class Task(id: Long, label: String)
 
@@ -38,5 +39,13 @@ object Task
       {
          case id~label => Task(id, label)
       }
+   }
+
+   implicit val taskWrites = new Writes[Task]
+   {
+      def writes(task: Task) = Json.obj(
+         "id" -> task.id,
+         "label" -> task.label
+      )
    }
 }
