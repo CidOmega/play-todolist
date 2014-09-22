@@ -16,12 +16,9 @@ object Task
    }
 
 
-   def create(label: String)
+   def create(label: String): Option[Long] = DB.withConnection
    {
-      DB.withConnection
-      {
-         implicit c => SQL("insert into task (label) values ({label})").on('label -> label).executeUpdate()
-      }
+      implicit c => SQL("insert into task (label) values ({label})").on('label -> label).executeInsert()
    }
 
 

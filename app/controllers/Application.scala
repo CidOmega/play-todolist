@@ -26,6 +26,23 @@ object Application extends Controller
    }
 
 
+   def createTaskId = Action
+   {
+      implicit request => taskForm.bindFromRequest.fold(
+         errors => BadRequest("Datos incorrectos"),
+         label =>
+         {
+            Task.create(label) match
+            {
+               case Some(_) => Created(Json.obj("label" -> label))
+               //case Some(idNewTask) => Created(Json.toJson(Task.read(idNewTask)))
+               case None => InternalServerError("La tarea no se insertó por algun motivo desconocido")
+            }
+         }
+      )
+   }
+
+
    def deleteTaskId(id: Long) = Action
    {
       Task.delete(id) match

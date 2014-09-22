@@ -3,17 +3,18 @@
 # ~~~~
 
 # Home page
-GET     /                       controllers.Application.index
+GET     /                        controllers.Application.index
 
 # Tasks
-GET     /tasks                  controllers.Application.tasks
-GET     /tasks/:id              controllers.Application.getTaskId(id: Long)
-DELETE  /tasks/:id              controllers.Application.deleteTaskId(id: Long)
+GET     /tasks                   controllers.Application.tasks
+GET     /tasks/:id               controllers.Application.getTaskId(id: Long)
+POST    /tasks                   controllers.Application.createTaskId
+DELETE  /tasks/:id               controllers.Application.deleteTaskId(id: Long)
 
 #UI
-GET     /ui                     controllers.Application.ui_main
-POST    /tasks                  controllers.Application.ui_newTask
-POST    /tasks/:id/delete       controllers.Application.ui_deleteTask(id: Long)
+GET     /ui                      controllers.Application.ui_main
+POST    /ui                      controllers.Application.ui_newTask
+POST    /ui/:id/delete           controllers.Application.ui_deleteTask(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET     /assets/*file            controllers.Assets.at(path="/public", file)
