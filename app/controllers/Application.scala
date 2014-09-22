@@ -26,6 +26,16 @@ object Application extends Controller
    }
 
 
+   def deleteTaskId(id: Long) = Action
+   {
+      Task.delete(id) match
+      {
+         case 0 => NotFound("Tarea no encontrada")
+         case _ => Ok("Tarea borrada, Id: " + id)
+      }
+   }
+
+
    //TODO Pendiente de redireccionar a otra pagina si las especificaciones no son las supuestas
    def index = Action
    {

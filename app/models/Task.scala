@@ -31,12 +31,9 @@ object Task
    }
 
 
-   def delete(id: Long)
+   def delete(id: Long): Int = DB.withConnection
    {
-      DB.withConnection
-      {
-         implicit c => SQL("delete from task where id = {id}").on('id -> id).executeUpdate()
-      }
+      implicit c => SQL("delete from task where id = {id}").on('id -> id).executeUpdate()
    }
 
 
@@ -47,6 +44,7 @@ object Task
          case id~label => Task(id, label)
       }
    }
+
 
    implicit val taskWrites = new Writes[Task]
    {

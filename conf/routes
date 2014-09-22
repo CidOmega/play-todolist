@@ -3,11 +3,12 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+GET     /                       controllers.Application.index
 
 # Tasks
 GET     /tasks                  controllers.Application.tasks
 GET     /tasks/:id              controllers.Application.getTaskId(id: Long)
+DELETE  /tasks/:id              controllers.Application.deleteTaskId(id: Long)
 
 #UI
 GET     /ui                     controllers.Application.ui_main
