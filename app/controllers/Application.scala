@@ -10,12 +10,6 @@ import models.Task
 
 object Application extends Controller
 {
-   def index = Action
-   {
-      Redirect(routes.Application.ui)
-   }
-
-
    def tasks = Action
    {
       Ok(Json.toJson(Task.all))
@@ -32,31 +26,44 @@ object Application extends Controller
    }
 
 
-   def ui = Action
+   //TODO Pendiente de redireccionar a otra pagina si las especificaciones no son las supuestas
+   def index = Action
+   {
+      Redirect(routes.Application.ui_main)
+   }
+
+
+   /*Region UI*/
+
+
+   def ui_main = Action
    {
       Ok(views.html.index(Task.all(), taskForm))
    }
 
 
-   def newTask = Action
+   def ui_newTask = Action
    {
       implicit request => taskForm.bindFromRequest.fold(
             errors => BadRequest(views.html.index(Task.all(), errors)),
             label =>
             {
                Task.create(label)
-               Redirect(routes.Application.ui)
+               Redirect(routes.Application.ui_main)
             }
          )
    }
 
 
-   def deleteTask(id: Long) = Action
+   def ui_deleteTask(id: Long) = Action
    {
       Task.delete(id)
-      Redirect(routes.Application.ui)
+      Redirect(routes.Application.ui_main)
    }
 
 
    val taskForm = Form("label" -> nonEmptyText)
+
+
+   /*End Region UI*/
 }
