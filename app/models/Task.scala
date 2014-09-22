@@ -24,6 +24,13 @@ object Task
       }
    }
 
+
+   def read(id: Long): Option[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task where id = {id}").on('id -> id).as(task singleOpt)
+   }
+
+
    def delete(id: Long)
    {
       DB.withConnection

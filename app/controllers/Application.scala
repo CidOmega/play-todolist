@@ -22,6 +22,16 @@ object Application extends Controller
    }
 
 
+   def getTaskId(id: Long) = Action
+   {
+      Task.read(id) match
+      {
+         case Some(t) => Ok(Json.toJson(t))
+         case None => NotFound("Tarea no encontrada")
+      }
+   }
+
+
    def ui = Action
    {
       Ok(views.html.index(Task.all(), taskForm))

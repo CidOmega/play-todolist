@@ -8,6 +8,7 @@ GET     /                           controllers.Application.index
 # Tasks
 GET     /ui                     controllers.Application.ui
 GET     /tasks                  controllers.Application.tasks
+GET     /tasks/:id              controllers.Application.getTaskId(id: Long)
 POST    /tasks                  controllers.Application.newTask
 POST    /tasks/:id/delete       controllers.Application.deleteTask(id: Long)
 
