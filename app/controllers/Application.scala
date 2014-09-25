@@ -53,7 +53,9 @@ object Application extends Controller
    }
 
 
-   //TODO Pendiente de redireccionar a otra pagina si las especificaciones no son las supuestas
+   val taskForm = Form("label" -> nonEmptyText)
+
+
    def index = Action
    {
       Redirect(routes.Application.ui_main)
@@ -87,9 +89,6 @@ object Application extends Controller
       Task.delete(id)
       Redirect(routes.Application.ui_main)
    }
-
-
-   val taskForm = Form("label" -> nonEmptyText)
 
 
    /*End Region UI*/
