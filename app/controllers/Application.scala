@@ -34,8 +34,7 @@ object Application extends Controller
          {
             Task.create(label) match
             {
-               case Some(_) => Created(Json.obj("label" -> label))
-               //case Some(idNewTask) => Created(Json.toJson(Task.read(idNewTask)))
+               case Some(idNewTask) => Created(Json.toJson(Task.read(idNewTask)))
                case None => InternalServerError("La tarea no se insertó por algun motivo desconocido")
             }
          }
@@ -54,6 +53,8 @@ object Application extends Controller
 
 
    val taskForm = Form("label" -> nonEmptyText)
+
+
 
 
    def index = Action
