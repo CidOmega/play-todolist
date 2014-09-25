@@ -4,39 +4,74 @@ import play.api.db._
 import play.api.Play.current
 import anorm._
 import anorm.SqlParser._
+import play.api.libs.json._
 
 case class Task(id: Long, label: String)
 
 object Task
 {
+   /**
+    * @return List[Task] con todas las tareas en la BD
+    */
    def all(): List[Task] = DB.withConnection
    {
       implicit c => SQL("select * from task").as(task *)
    }
 
 
-   def create(label: String)
+   /**
+    * Crea una tarea con al descripción dada
+    * @param label descripción de la tarea
+    * @return Option[Long]: Some[id] con el id de la tarea creada OR None si algo falló
+    */
+   def create(label: String): Option[Long] = DB.withConnection
    {
-      DB.withConnection
-      {
-         implicit c => SQL("insert into task (label) values ({label})").on('label -> label).executeUpdate()
-      }
-   }
-
-   def delete(id: Long)
-   {
-      DB.withConnection
-      {
-         implicit c => SQL("delete from task where id = {id}").on('id -> id).executeUpdate()
-      }
+      implicit c => SQL("insert into task (label) values ({label})").on('label -> label).executeInsert()
    }
 
 
+   /**
+    * Devuelve un Option[Task] del id dado
+    * @param id id de la tarea a recuperar
+    * @return Some(Task) con la tarea existente OR None si la tarea no existe
+    */
+   def read(id: Long): Option[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task where id = {id}").on('id -> id).as(task singleOpt)
+   }
+
+
+   /**
+    * Borra la(s) tarea(s) con el Id dado
+    * @param id id de la tarea a borrar
+    * @return numero de tareas borradas (en principio '0' OR '1')
+    */
+   def delete(id: Long): Int = DB.withConnection
+   {
+      implicit c => SQL("delete from task where id = {id}").on('id -> id).executeUpdate()
+   }
+
+
+   /**
+    * Conversor SQL a Task
+    */
    val task =
    {
       get[Long]("id") ~ get[String]("label") map
       {
          case id~label => Task(id, label)
       }
+   }
+
+
+   /**
+    * Conversor Task a Json
+    */
+   implicit val taskWrites = new Writes[Task]
+   {
+      def writes(task: Task) = Json.obj(
+         "id" -> task.id,
+         "label" -> task.label
+      )
    }
 }
