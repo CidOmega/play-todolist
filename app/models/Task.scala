@@ -10,33 +10,7 @@ case class Task(id: Long, label: String, owner: User)
 
 object Task
 {
-   /**
-    * @return List[Task] con todas las tareas en la BD
-    */
-   def all(): List[Task] = DB.withConnection
-   {
-      implicit c => SQL("select * from task where taskowner = 'tasks'").as(task *)
-   }
-
-
-   /**
-    * @return List[Task] con todas las tareas en la BD
-    */
-   def allOfUser(taskowner: String): List[Task] = DB.withConnection
-   {
-      implicit c => SQL("select * from task where taskowner = {taskowner}").on('taskowner -> taskowner).as(task *)
-   }
-
-
-   /**
-    * Crea una tarea con al descripción dada
-    * @param label descripción de la tarea
-    * @return Option[Long]: Some[id] con el id de la tarea creada OR None si algo falló
-    */
-   def create(label: String): Option[Long] = DB.withConnection
-   {
-      implicit c => SQL("insert into task (label) values ({label})").on('label -> label).executeInsert()
-   }
+   /*Region acoplada a User*/
 
 
    /**
@@ -54,6 +28,41 @@ object Task
 
 
    /**
+    * @return List[Task] con todas las tareas en la BD
+    */
+   def allOfUser(taskowner: String): List[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task where taskowner = {taskowner}").on('taskowner -> taskowner).as(task *)
+   }
+
+
+   /*End Region acoplada a User*/
+
+
+   /*Region Tareas anonimas*/
+
+
+   /**
+    * @return List[Task] con todas las tareas en la BD
+    */
+   def all(): List[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task where taskowner = 'tasks'").as(task *)
+   }
+
+
+   /**
+    * Crea una tarea con al descripción dada
+    * @param label descripción de la tarea
+    * @return Option[Long]: Some[id] con el id de la tarea creada OR None si algo falló
+    */
+   def create(label: String): Option[Long] = DB.withConnection
+   {
+      implicit c => SQL("insert into task (label) values ({label})").on('label -> label).executeInsert()
+   }
+
+
+   /**
     * Devuelve un Option[Task] del id dado
     * @param id id de la tarea a recuperar
     * @return Some(Task) con la tarea existente OR None si la tarea no existe
@@ -62,6 +71,12 @@ object Task
    {
       implicit c => SQL("select * from task where id = {id}").on('id -> id).as(task singleOpt)
    }
+
+
+   /*End Region Tareas anonimas*/
+
+
+   /*Region Global*/
 
 
    /**
@@ -98,4 +113,7 @@ object Task
          "owner" -> task.owner
       )
    }
+
+
+   /*End Region Global*/
 }
