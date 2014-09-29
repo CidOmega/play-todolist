@@ -6,7 +6,7 @@ import anorm._
 import anorm.SqlParser._
 import play.api.libs.json._
 
-case class Task(id: Long, label: String)
+case class Task(id: Long, label: String, owner: User)
 
 object Task
 {
@@ -57,9 +57,9 @@ object Task
     */
    val task =
    {
-      get[Long]("id") ~ get[String]("label") map
+      get[Long]("id") ~ get[String]("label") ~ get[String]("taskowner") map
       {
-         case id~label => Task(id, label)
+         case id~label~taskowner => Task(id, label, User.read(taskowner))
       }
    }
 
@@ -71,7 +71,8 @@ object Task
    {
       def writes(task: Task) = Json.obj(
          "id" -> task.id,
-         "label" -> task.label
+         "label" -> task.label,
+         "owner" -> task.owner
       )
    }
 }
