@@ -41,7 +41,7 @@ object User
     */
    def Exists(nick: String): Boolean =
    {
-      DB.withConnection { implicit c => SQL("select 1 from people where nick = {nick}").on('nick -> nick).as(SqlParser.int(0).singleOpt) } match
+      readOption(nick) match
       {
          case Some(_) => true
          case None => false
