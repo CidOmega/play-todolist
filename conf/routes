@@ -11,6 +11,9 @@ GET     /tasks/:id               controllers.Application.getTaskId(id: Long)
 POST    /tasks                   controllers.Application.createTaskId
 DELETE  /tasks/:id               controllers.Application.deleteTaskId(id: Long)
 
+# Tasks de users
+POST      /:owner                controllers.Application.createTaskWithOwner(owner: String)
+
 #UI
 GET     /ui                      controllers.Application.ui_main
 POST    /ui                      controllers.Application.ui_newTask

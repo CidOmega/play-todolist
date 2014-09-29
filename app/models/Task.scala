@@ -31,6 +31,20 @@ object Task
 
 
    /**
+    * Crea una tarea con al descripción dada y cuyo propietario será el usuario dado (de existir)
+    * @param label descripción de la tarea
+    * @param taskowner propietario de la tarea
+    * @return Option[Long]: Some[id] con el id de la tarea creada OR None si algo falló
+    * @throws JdbcSQLException Si el usuario no existe (entre otros errores de BD)
+    */
+   def create(label: String, taskowner: String): Option[Long] = DB.withConnection
+   {
+      implicit c => SQL("insert into task (label, taskowner) values ({label}, {taskowner})").
+         on('label -> label, 'taskowner -> taskowner).executeInsert()
+   }
+
+
+   /**
     * Devuelve un Option[Task] del id dado
     * @param id id de la tarea a recuperar
     * @return Some(Task) con la tarea existente OR None si la tarea no existe
