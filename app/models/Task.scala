@@ -15,7 +15,7 @@ object Task
     */
    def all(): List[Task] = DB.withConnection
    {
-      implicit c => SQL("select * from task").as(task *)
+      implicit c => SQL("select * from task where taskowner = 'tasks'").as(task *)
    }
 
 
