@@ -16,6 +16,19 @@ object Application extends Controller
    }
 
 
+   def getTasksByOwner(taskowner: String) = Action
+   {
+      if(User.Exists(taskowner))
+      {
+         Ok(Json.toJson(Task.allOfUser(taskowner)))
+      }
+      else
+      {
+         NotFound("El usuario solicitado no existe")
+      }
+   }
+
+
    def getTaskId(id: Long) = Action
    {
       Task.read(id) match

@@ -20,6 +20,15 @@ object Task
 
 
    /**
+    * @return List[Task] con todas las tareas en la BD
+    */
+   def allOfUser(taskowner: String): List[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task where taskowner = {taskowner}").on('taskowner -> taskowner).as(task *)
+   }
+
+
+   /**
     * Crea una tarea con al descripción dada
     * @param label descripción de la tarea
     * @return Option[Long]: Some[id] con el id de la tarea creada OR None si algo falló
