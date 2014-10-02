@@ -28,7 +28,9 @@ object Task
 
 
    /**
-    * @return List[Task] con todas las tareas en la BD
+    * Devuelve las tareas de un usuario
+    * @param taskowner propietario de las tareas a recuperar
+    * @return List[Task] con todas las tareas en la BD del usuario dado
     */
    def allOfUser(taskowner: String): List[Task] = DB.withConnection
    {
@@ -43,9 +45,9 @@ object Task
 
 
    /**
-    * @return List[Task] con todas las tareas en la BD
+    * @return List[Task] con todas las tareas en la BD con usuario tasks (anonimas)
     */
-   def all(): List[Task] = DB.withConnection
+   def allAnonimus(): List[Task] = DB.withConnection
    {
       implicit c => SQL("select * from task where taskowner = 'tasks'").as(task *)
    }
@@ -62,21 +64,21 @@ object Task
    }
 
 
+   /*End Region Tareas anonimas*/
+
+
+   /*Region Global*/
+
+
    /**
     * Devuelve un Option[Task] del id dado
     * @param id id de la tarea a recuperar
     * @return Some(Task) con la tarea existente OR None si la tarea no existe
     */
-   def read(id: Long): Option[Task] = DB.withConnection
+   def readOption(id: Long): Option[Task] = DB.withConnection
    {
       implicit c => SQL("select * from task where id = {id}").on('id -> id).as(task singleOpt)
    }
-
-
-   /*End Region Tareas anonimas*/
-
-
-   /*Region Global*/
 
 
    /**

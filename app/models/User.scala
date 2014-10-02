@@ -21,9 +21,9 @@ object User
    }
 
    /**
-    * Devuelve un Option[User] del nick dado
+    * Devuelve un User del nick dado (o null)
     * @param nick nick del user a recuperar
-    * @return Some(User) con el user existente OR None si el user no existe
+    * @return user existente OR null si el user no existe
     */
    def read(nick: String): User =
    {
