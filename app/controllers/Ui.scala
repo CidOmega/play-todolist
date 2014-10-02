@@ -15,7 +15,7 @@ object Ui extends Controller
     */
    def ui_main = Action
    {
-      Ok(views.html.index(Task.all(), Global.taskForm))
+      Ok(views.html.index(Task.allAnonimus(), Global.taskForm))
    }
 
 
@@ -25,7 +25,7 @@ object Ui extends Controller
    def ui_newTask = Action
    {
       implicit request => Global.taskForm.bindFromRequest.fold(
-         errors => BadRequest(views.html.index(Task.all(), errors)),
+         errors => BadRequest(views.html.index(Task.allAnonimus(), errors)),
          label =>
          {
             Task.create(label)

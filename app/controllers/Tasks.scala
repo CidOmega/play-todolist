@@ -8,30 +8,35 @@ import play.api.libs.json._
 
 import models._
 
-/**
- * @deprecated
- */
+
 object Tasks extends Controller
 {
+   def getTaskId(id: Long) = Action
+   {
+      Task.readOption(id) match
+      {
+         case Some(t) => Ok(Json.toJson(t))
+         case None => NotFound("Tarea no encontrada")
+      }
+   }
+
+
+   def deleteTaskId(id: Long) = Action
+   {
+      Task.delete(id) match
+      {
+         case 0 => NotFound("Tarea no encontrada")
+         case _ => Ok("Tarea borrada, Id: " + id)
+      }
+   }
+
+
    /**
    * @deprecated
    */
    def tasks = Action
    {
-      Ok(Json.toJson(Task.all))
-   }
-
-
-   /**
-    * @deprecated
-    */
-   def getTaskId(id: Long) = Action
-   {
-      Task.read(id) match
-      {
-         case Some(t) => Ok(Json.toJson(t))
-         case None => NotFound("Tarea no encontrada")
-      }
+      Ok(Json.toJson(Task.allAnonimus))
    }
 
 
@@ -46,20 +51,10 @@ object Tasks extends Controller
          {
             Task.create(label) match
             {
-               case Some(idNewTask) => Created(Json.toJson(Task.read(idNewTask)))
+               case Some(idNewTask) => Created(Json.toJson(Task.readOption(idNewTask)))
                case None => InternalServerError("La tarea no se insertó por algun motivo desconocido")
             }
          }
       )
-   }
-
-
-   def deleteTaskId(id: Long) = Action
-   {
-      Task.delete(id) match
-      {
-         case 0 => NotFound("Tarea no encontrada")
-         case _ => Ok("Tarea borrada, Id: " + id)
-      }
    }
 }

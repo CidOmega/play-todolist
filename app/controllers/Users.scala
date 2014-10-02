@@ -33,7 +33,7 @@ object Users extends Controller
             {
                Task.create(label, taskowner) match
                {
-                  case Some(idNewTask) => Created(Json.toJson(Task.read(idNewTask)))
+                  case Some(idNewTask) => Created(Json.toJson(Task.readOption(idNewTask)))
                   case None => InternalServerError("La tarea no se insertó por algun motivo desconocido")
                }
             }
