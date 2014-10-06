@@ -6,7 +6,9 @@ import anorm._
 import anorm.SqlParser._
 import play.api.libs.json._
 
-case class Task(id: Long, label: String, owner: User)
+import java.util.{Date}
+
+case class Task(id: Long, label: String, owner: User, deadend: Option[Date])
 
 object Task
 {
@@ -20,10 +22,10 @@ object Task
     * @return Option[Long]: Some[id] con el id de la tarea creada OR None si algo falló
     * @throws JdbcSQLException Si el usuario no existe (entre otros errores de BD)
     */
-   def create(label: String, taskowner: String): Option[Long] = DB.withConnection
+   def create(label: String, taskowner: String, deadend: Option[Date]): Option[Long] = DB.withConnection
    {
-      implicit c => SQL("insert into task (label, taskowner) values ({label}, {taskowner})").
-         on('label -> label, 'taskowner -> taskowner).executeInsert()
+      implicit c => SQL("insert into task (label, taskowner, deadend) values ({label}, {taskowner}, {deadend})").
+         on('label -> label, 'taskowner -> taskowner, 'deadend -> deadend).executeInsert()
    }
 
 
@@ -58,9 +60,10 @@ object Task
     * @param label descripción de la tarea
     * @return Option[Long]: Some[id] con el id de la tarea creada OR None si algo falló
     */
-   def create(label: String): Option[Long] = DB.withConnection
+   def create(label: String, deadend: Option[Date]): Option[Long] = DB.withConnection
    {
-      implicit c => SQL("insert into task (label) values ({label})").on('label -> label).executeInsert()
+      implicit c => SQL("insert into task (label, deadend) values ({label}, {deadend})").
+         on('label -> label, 'deadend -> deadend).executeInsert()
    }
 
 
@@ -97,9 +100,9 @@ object Task
     */
    val task =
    {
-      get[Long]("id") ~ get[String]("label") ~ get[String]("taskowner") map
+      get[Long]("id") ~ get[String]("label") ~ get[String]("taskowner") ~ get[Option[Date]]("deadend") map
       {
-         case id~label~taskowner => Task(id, label, User.read(taskowner))
+         case id~label~taskowner~deadend => Task(id, label, User.read(taskowner), deadend)
       }
    }
 
@@ -109,10 +112,13 @@ object Task
     */
    implicit val taskWrites = new Writes[Task]
    {
+      val formater: java.text.SimpleDateFormat = new java.text.SimpleDateFormat("dd/MM/yyyy")
+
       def writes(task: Task) = Json.obj(
          "id" -> task.id,
          "label" -> task.label,
-         "owner" -> task.owner
+         "owner" -> task.owner,
+         "deadend" -> JsString(task.deadend.map(formater.format(_)).getOrElse("-"))
       )
    }
 

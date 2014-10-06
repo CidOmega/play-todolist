@@ -27,11 +27,11 @@ object Users extends Controller
    {
       implicit request => Global.taskForm.bindFromRequest.fold(
          errors => BadRequest("Datos incorrectos"),
-         label =>
+         task =>
          {
             if (User.Exists(taskowner))
             {
-               Task.create(label, taskowner) match
+               Task.create(task.label, taskowner, task.deadend) match
                {
                   case Some(idNewTask) => Created(Json.toJson(Task.readOption(idNewTask)))
                   case None => InternalServerError("La tarea no se insertó por algun motivo desconocido")

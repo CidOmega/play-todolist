@@ -10,7 +10,13 @@ import models._
 
 object Global extends Controller
 {
-   val taskForm = Form("label" -> nonEmptyText)
+   val taskForm = Form(mapping
+      (
+         "id" -> ignored(-1L),
+         "label" -> nonEmptyText,
+         "owner" -> ignored(User("Nadie")),
+         "deadend" -> optional(date("dd/MM/yyyy"))
+      )(Task.apply)(Task.unapply))
 
 
    def index = Action
