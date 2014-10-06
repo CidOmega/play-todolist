@@ -42,6 +42,25 @@ object Users extends Controller
    }
 
 
+   def getTasksEndsBetween(taskowner: String, rangeBegin: String, rangeEnd: String) = Action
+   {
+      (Global.dateQueryStringParse(rangeBegin), Global.dateQueryStringParse(rangeEnd)) match
+      {
+         case (Left(error), _) => error
+         case (Right(_), Left(error)) => error
+         case (Right(dateBegin), Right(dateEnd)) =>
+            if (User.Exists(taskowner))
+            {
+               Ok(Json.toJson (Task.tasksOfUserEndsBetween(taskowner, dateBegin, dateEnd)))
+            }
+            else
+            {
+               NotFound ("El usuario solicitado no existe")
+            }
+      }
+   }
+
+
    def createTask(taskowner: String) = Action
    {
       implicit request => Global.taskForm.bindFromRequest.fold(

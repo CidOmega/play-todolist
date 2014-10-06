@@ -50,6 +50,13 @@ object Task
    }
 
 
+   def tasksOfUserEndsBetween(taskowner:String, dateBegin: Date, dateEnd: Date): List[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task where taskowner = {taskowner} and deadend > {dateBegin} and deadend < {dateEnd}").
+         on('taskowner -> taskowner, 'dateBegin -> dateBegin, 'dateEnd -> dateEnd).as(task *)
+   }
+
+
    /*End Region con filtros de fecha*/
 
 
