@@ -65,6 +65,19 @@ object Users extends Controller
    }
 
 
+   def getTasksWithoutDeadend(taskowner: String) = Action
+   {
+      if(User.Exists(taskowner))
+      {
+         Ok(Json.toJson(Task.tasksOfUserWithoutDeadend(taskowner)))
+      }
+      else
+      {
+         NotFound("El usuario solicitado no existe")
+      }
+   }
+
+
    def createTask(taskowner: String) = Action
    {
       implicit request => Global.taskForm.bindFromRequest.fold(

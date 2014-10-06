@@ -57,6 +57,13 @@ object Task
    }
 
 
+   def tasksOfUserWithoutDeadend(taskowner:String): List[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task where taskowner = {taskowner} and deadend is null").
+         on('taskowner -> taskowner).as(task *)
+   }
+
+
    /*End Region con filtros de fecha*/
 
 

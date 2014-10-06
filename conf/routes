@@ -19,6 +19,7 @@ POST    /:owner/tasks            controllers.Users.createTask(owner: String)
 # Tasks de users con filtros de fecha
 GET     /:owner/tasks/ends_after            controllers.Users.getTasksEndsAfter(owner: String, endsAfter: String)
 GET     /:owner/tasks/ends_between          controllers.Users.getTasksEndsBetween(owner: String, rangeBegin: String, rangeEnd: String)
+GET     /:owner/tasks/no_deadend            controllers.Users.getTasksWithoutDeadend(owner: String)
 
 
 #UI
