@@ -18,8 +18,8 @@ object Global extends Controller
          "deadend" -> optional(date("dd/MM/yyyy"))
       )(Task.apply)(Task.unapply))
 
-
-   val dateQueryStringParser: java.text.SimpleDateFormat = new java.text.SimpleDateFormat("dd-MM-yyyy")
+   val dateQueryStringFormat = "dd-MM-yyyy"
+   val dateQueryStringParser: java.text.SimpleDateFormat = new java.text.SimpleDateFormat(dateQueryStringFormat)
    def dateQueryStringParse(queryString: String): Either[Result, java.util.Date] =
    {
       try
@@ -28,7 +28,7 @@ object Global extends Controller
       }
       catch
       {
-         case e: Exception => Left(BadRequest("Fecha '" + queryString + "' no parseable: " + e.toString))
+         case e: Exception => Left(BadRequest("Fecha '" + queryString + "' no parseable: " + e.toString + "\n\nFormato aceptable: " + dateQueryStringFormat))
       }
    }
 
