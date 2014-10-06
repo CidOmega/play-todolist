@@ -11,9 +11,14 @@ GET     /tasks/:id               controllers.Tasks.getTaskId(id: Long)
 POST    /tasks                   controllers.Tasks.createTaskId
 DELETE  /tasks/:id               controllers.Tasks.deleteTaskId(id: Long)
 
+
 # Tasks de users
 GET     /:owner/tasks            controllers.Users.getTasks(owner: String)
 POST    /:owner/tasks            controllers.Users.createTask(owner: String)
+
+# Tasks de users con filtros de fecha
+GET     /:owner/tasks/ends_after            controllers.Users.getTasksEndsAfter(owner: String, endsAfter: String)
+
 
 #UI
 GET     /ui                      controllers.Ui.ui_main

@@ -7,6 +7,7 @@ import play.api.data.Forms._
 import play.api.libs.json._
 
 import models._
+import java.util.{Date}
 
 object Users extends Controller
 {
@@ -19,6 +20,24 @@ object Users extends Controller
       else
       {
          NotFound("El usuario solicitado no existe")
+      }
+   }
+
+
+   def getTasksEndsAfter(taskowner: String, endsAfter: String) = Action
+   {
+      Global.dateQueryStringParse(endsAfter) match
+      {
+         case Left(error) => error
+         case Right(date) =>
+            if (User.Exists(taskowner))
+            {
+               Ok(Json.toJson (Task.tasksOfUserEndsAfter(taskowner, date)))
+            }
+            else
+            {
+               NotFound ("El usuario solicitado no existe")
+            }
       }
    }
 

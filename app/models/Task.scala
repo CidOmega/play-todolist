@@ -40,6 +40,19 @@ object Task
    }
 
 
+   /*Region con filtros de fecha*/
+
+
+   def tasksOfUserEndsAfter(taskowner:String, endsAfter: Date): List[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task where taskowner = {taskowner} and deadend > {endsAfter}").
+         on('taskowner -> taskowner, 'endsAfter -> endsAfter).as(task *)
+   }
+
+
+   /*End Region con filtros de fecha*/
+
+
    /*End Region acoplada a User*/
 
 

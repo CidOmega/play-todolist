@@ -19,6 +19,20 @@ object Global extends Controller
       )(Task.apply)(Task.unapply))
 
 
+   val dateQueryStringParser: java.text.SimpleDateFormat = new java.text.SimpleDateFormat("dd-MM-yyyy")
+   def dateQueryStringParse(queryString: String): Either[Result, java.util.Date] =
+   {
+      try
+      {
+         Right(dateQueryStringParser.parse(queryString))
+      }
+      catch
+      {
+         case e: Exception => Left(BadRequest("Fecha '" + queryString + "' no parseable: " + e.toString))
+      }
+   }
+
+
    def index = Action
    {
       Redirect(routes.Ui.ui_main)
