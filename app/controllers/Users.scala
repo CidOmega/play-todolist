@@ -49,7 +49,11 @@ object Users extends Controller
          case (Left(error), _) => error
          case (Right(_), Left(error)) => error
          case (Right(dateBegin), Right(dateEnd)) =>
-            if (User.Exists(taskowner))
+            if(dateBegin.after(dateEnd))
+            {
+               BadRequest("El fin de rango de fechas debe ser posterior al inicio del mismo")
+            }
+            else if (User.Exists(taskowner))
             {
                Ok(Json.toJson (Task.tasksOfUserEndsBetween(taskowner, dateBegin, dateEnd)))
             }
