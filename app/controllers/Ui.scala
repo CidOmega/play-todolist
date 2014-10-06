@@ -26,9 +26,9 @@ object Ui extends Controller
    {
       implicit request => Global.taskForm.bindFromRequest.fold(
          errors => BadRequest(views.html.index(Task.allAnonimus(), errors)),
-         label =>
+         task =>
          {
-            Task.create(label)
+            Task.create(task.label, task.deadend)
             Redirect(routes.Ui.ui_main)
          }
       )

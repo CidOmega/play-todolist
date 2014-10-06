@@ -47,9 +47,9 @@ object Tasks extends Controller
    {
       implicit request => Global.taskForm.bindFromRequest.fold(
          errors => BadRequest("Datos incorrectos"),
-         label =>
+         task =>
          {
-            Task.create(label) match
+            Task.create(task.label, task.deadend) match
             {
                case Some(idNewTask) => Created(Json.toJson(Task.readOption(idNewTask)))
                case None => InternalServerError("La tarea no se insertó por algun motivo desconocido")
