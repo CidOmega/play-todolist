@@ -81,7 +81,12 @@ Devuelve la task con el id dado en la URL
 Elimina la task con el id dado en la URL
 
 
-###Tasks de usuarios
+###Usuarios
+
+
+####GET /:user
+
+Devuelve el usuario dado en la URL (solo el nick, por ahora)
 
 
 ####GET /:user/tasks
@@ -101,7 +106,17 @@ Crea una task del usuario dado en la URL con los datos dados en el cuerpo de la 
 
 ####GET /:user/tasks/ends_after?endsAfter=<fecha>
 
-Devuelve las tareas del usuario que finalizan despues de la fecha dada en la URL*
+Devuelve las tareas del usuario que finalizan estrictamente despues de la fecha dada en la URL*
+ 
+
+####GET /:user/tasks/ends_at?endsAt=<fecha>
+
+Devuelve las tareas del usuario que finalizan el dia de la fecha dada en la URL*
+ 
+
+####GET /:user/tasks/ends_before?endsBefore=<fecha>
+
+Devuelve las tareas del usuario que finalizan estrictamente antes de la fecha dada en la URL*
  
 
 ####GET /:user/tasks/ends_between?rangeBegin=<fecha>&rangeEnd=<fecha>

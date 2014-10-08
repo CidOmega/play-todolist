@@ -11,6 +11,16 @@ import java.util.{Date}
 
 object Users extends Controller
 {
+   def getUser(nick: String) = Action
+   {
+      User.readOption(nick) match
+      {
+         case Some(u) => Ok(Json.toJson(u))
+         case None => NotFound("Usuario no encontrado")
+      }
+   }
+
+
    def getTasks(taskowner: String) = Action
    {
       if(User.Exists(taskowner))
@@ -33,6 +43,42 @@ object Users extends Controller
             if (User.Exists(taskowner))
             {
                Ok(Json.toJson (Task.tasksOfUserEndsAfter(taskowner, date)))
+            }
+            else
+            {
+               NotFound ("El usuario solicitado no existe")
+            }
+      }
+   }
+
+
+   def getTasksEndsAt(taskowner: String, endsAt: String) = Action
+   {
+      Global.dateQueryStringParse(endsAt) match
+      {
+         case Left(error) => error
+         case Right(date) =>
+            if (User.Exists(taskowner))
+            {
+               Ok(Json.toJson (Task.tasksOfUserEndsAt(taskowner, date)))
+            }
+            else
+            {
+               NotFound ("El usuario solicitado no existe")
+            }
+      }
+   }
+
+
+   def getTasksEndsBefore(taskowner: String, endsBefore: String) = Action
+   {
+      Global.dateQueryStringParse(endsBefore) match
+      {
+         case Left(error) => error
+         case Right(date) =>
+            if (User.Exists(taskowner))
+            {
+               Ok(Json.toJson (Task.tasksOfUserEndsBefore(taskowner, date)))
             }
             else
             {

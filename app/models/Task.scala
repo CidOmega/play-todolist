@@ -45,8 +45,22 @@ object Task
 
    def tasksOfUserEndsAfter(taskowner:String, endsAfter: Date): List[Task] = DB.withConnection
    {
-      implicit c => SQL("select * from task where taskowner = {taskowner} and deadend >= {endsAfter}").
+      implicit c => SQL("select * from task where taskowner = {taskowner} and deadend > {endsAfter}").
          on('taskowner -> taskowner, 'endsAfter -> endsAfter).as(task *)
+   }
+
+
+   def tasksOfUserEndsAt(taskowner:String, endsAt: Date): List[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task where taskowner = {taskowner} and deadend = {endsAt}").
+         on('taskowner -> taskowner, 'endsAt -> endsAt).as(task *)
+   }
+
+
+   def tasksOfUserEndsBefore(taskowner:String, endsBefore: Date): List[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task where taskowner = {taskowner} and deadend < {endsBefore}").
+         on('taskowner -> taskowner, 'endsBefore -> endsBefore).as(task *)
    }
 
 
