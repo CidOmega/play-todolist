@@ -137,6 +137,19 @@ object Users extends Controller
    }
 
 
+   def getTasksOutdate(taskowner: String) = Action
+   {
+      if (User.Exists(taskowner))
+      {
+         Ok(Json.toJson (Task.tasksOfUserEndsBefore(taskowner, Global.Today)))
+      }
+      else
+      {
+         NotFound ("El usuario solicitado no existe")
+      }
+   }
+
+
    def createTask(taskowner: String) = Action
    {
       implicit request => Global.taskForm.bindFromRequest.fold(

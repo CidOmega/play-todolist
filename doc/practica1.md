@@ -126,7 +126,12 @@ Devuelve las tareas del usuario que finalizan en el rango de fechas [rangeBegin,
 
 ####GET /:user/tasks/ends_today
 
-Devuelve las tareas del usuario que finalizan hoy*
+Devuelve las tareas del usuario que finalizan hoy
+ 
+
+####GET /:user/tasks/outdate
+
+Devuelve las tareas del usuario cuya fecha ya está pasada
  
 
 ####GET /:user/tasks/no_deadend
