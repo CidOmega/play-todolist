@@ -3,10 +3,13 @@
 
 Esta versión a introducido un fuerte cambio en la app, pasando de un sencillo formulario a una API REST y añadiendo lo siguiente:
 * Las tasks pertenecen (Obligatoriamente) a un usuario
->* Las tasks creadas en V0.0 siguen existiendo pero las funcionalidades sobre, y persistencia de, las mismas no se asegura en futuras versiones (lo mismo para las tasks sin usuario que se creen de ahora en adelante)
+
+> * Las tasks creadas en V0.0 siguen existiendo pero las funcionalidades sobre, y persistencia de, las mismas no se asegura en futuras versiones (lo mismo para las tasks sin usuario que se creen de ahora en adelante)
+
 * Las tasks poseen una fecha (Opcionalmente) que marca el fin de la misma (las tasks fuera de fecha no son eliminadas por el sistema)
->* Este campo sigue el formato 'dd/MM/yyyy', Ej: 25/11/1993, 01/01/2014, etc.
->* Se han añadido filtros de tasks sobre sus fechas (detalladas más adelante)
+
+> * Este campo sigue el formato 'dd/MM/yyyy', Ej: 25/11/1993, 01/01/2014, etc.
+> * Se han añadido filtros de tasks sobre sus fechas (detalladas más adelante)
 
 
 
