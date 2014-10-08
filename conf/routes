@@ -12,20 +12,33 @@ POST    /tasks                   controllers.Tasks.createTaskId
 DELETE  /tasks/:id               controllers.Tasks.deleteTaskId(id: Long)
 
 
-# Tasks de users
-GET     /:owner/tasks            controllers.Users.getTasks(owner: String)
-POST    /:owner/tasks            controllers.Users.createTask(owner: String)
-
-# Tasks de users con filtros de fecha
-GET     /:owner/tasks/ends_after            controllers.Users.getTasksEndsAfter(owner: String, endsAfter: String)
-GET     /:owner/tasks/ends_between          controllers.Users.getTasksEndsBetween(owner: String, rangeBegin: String, rangeEnd: String)
-GET     /:owner/tasks/no_deadend            controllers.Users.getTasksWithoutDeadend(owner: String)
-
-
 #UI
 GET     /ui                      controllers.Ui.ui_main
 POST    /ui                      controllers.Ui.ui_newTask
 POST    /ui/:id/delete           controllers.Ui.ui_deleteTask(id: Long)
+
+
+#Users
+GET     /:owner                  controllers.Users.getUser(owner: String)
+
+
+# Tasks de users
+GET     /:owner/tasks            controllers.Users.getTasks(owner: String)
+
+
+# Acciones sobre tasks de Users
+POST    /:owner/tasks            controllers.Users.createTask(owner: String)
+DELETE  /:owner/tasks/outdate    controllers.Users.deleteTasksOutdate(owner: String)
+
+
+# Tasks de users con filtros de fecha
+GET     /:owner/tasks/ends_after            controllers.Users.getTasksEndsAfter(owner: String, endsAfter: String)
+GET     /:owner/tasks/ends_at               controllers.Users.getTasksEndsAt(owner: String, endsAt: String)
+GET     /:owner/tasks/ends_before           controllers.Users.getTasksEndsBefore(owner: String, endsBefore: String)
+GET     /:owner/tasks/ends_between          controllers.Users.getTasksEndsBetween(owner: String, rangeBegin: String, rangeEnd: String)
+GET     /:owner/tasks/ends_today            controllers.Users.getTasksEndsToday(owner: String)
+GET     /:owner/tasks/outdate                 controllers.Users.getTasksOutdate(owner: String)
+GET     /:owner/tasks/no_deadend            controllers.Users.getTasksWithoutDeadend(owner: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file            controllers.Assets.at(path="/public", file)

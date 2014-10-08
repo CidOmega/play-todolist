@@ -7,6 +7,7 @@ import play.api.data.Forms._
 import play.api.libs.json._
 
 import models._
+import java.util.{Date}
 
 object Global extends Controller
 {
@@ -20,16 +21,23 @@ object Global extends Controller
 
    val dateQueryStringFormat = "dd-MM-yyyy"
    val dateQueryStringParser: java.text.SimpleDateFormat = new java.text.SimpleDateFormat(dateQueryStringFormat)
-   def dateQueryStringParse(queryString: String): Either[Result, java.util.Date] =
+   def dateQueryStringParse(queryString: String): Either[Result, Date] =
    {
       try
       {
          Right(dateQueryStringParser.parse(queryString))
       }
       catch
-      {
-         case e: Exception => Left(BadRequest("Fecha '" + queryString + "' no parseable: " + e.toString + "\n\nFormato aceptable: " + dateQueryStringFormat))
-      }
+         {
+            case e: Exception => Left(BadRequest("Fecha '" + queryString + "' no parseable: " + e.toString + "\n\nFormato aceptable: " + dateQueryStringFormat))
+         }
+   }
+
+
+   def Today: Date =
+   {
+      //Para borrar las horas y que coincida con lo esperado por la base de datos
+      dateQueryStringParser.parse(dateQueryStringParser.format(new Date()))
    }
 
 

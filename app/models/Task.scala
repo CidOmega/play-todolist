@@ -29,6 +29,13 @@ object Task
    }
 
 
+   def deleteTasksOfUserEndsBefore(taskowner:String, endsBefore: Date): Int = DB.withConnection
+   {
+      implicit c => SQL("delete from task where taskowner = {taskowner} and deadend < {endsBefore}").
+         on('taskowner -> taskowner, 'endsBefore -> endsBefore).executeUpdate()
+   }
+
+
    /**
     * Devuelve las tareas de un usuario
     * @param taskowner propietario de las tareas a recuperar
@@ -45,8 +52,22 @@ object Task
 
    def tasksOfUserEndsAfter(taskowner:String, endsAfter: Date): List[Task] = DB.withConnection
    {
-      implicit c => SQL("select * from task where taskowner = {taskowner} and deadend >= {endsAfter}").
+      implicit c => SQL("select * from task where taskowner = {taskowner} and deadend > {endsAfter}").
          on('taskowner -> taskowner, 'endsAfter -> endsAfter).as(task *)
+   }
+
+
+   def tasksOfUserEndsAt(taskowner:String, endsAt: Date): List[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task where taskowner = {taskowner} and deadend = {endsAt}").
+         on('taskowner -> taskowner, 'endsAt -> endsAt).as(task *)
+   }
+
+
+   def tasksOfUserEndsBefore(taskowner:String, endsBefore: Date): List[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task where taskowner = {taskowner} and deadend < {endsBefore}").
+         on('taskowner -> taskowner, 'endsBefore -> endsBefore).as(task *)
    }
 
 
@@ -145,7 +166,7 @@ object Task
          "id" -> task.id,
          "label" -> task.label,
          "owner" -> task.owner,
-         "deadend" -> JsString(task.deadend.map(formater.format(_)).getOrElse("-"))
+         "deadend" -> JsString(task.deadend.map(formater.format(_)).getOrElse(null))
       )
    }
 
