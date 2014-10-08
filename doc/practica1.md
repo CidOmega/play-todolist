@@ -81,7 +81,7 @@ Devuelve la task con el id dado en la URL
 Elimina la task con el id dado en la URL
 
 
-###Usuarios
+###Datos Usuarios
 
 
 ####GET /:user
@@ -92,13 +92,6 @@ Devuelve el usuario dado en la URL (solo el nick, por ahora)
 ####GET /:user/tasks
 
 Devuelve todas las tasks del usuario dado en la URL
-
-
-####POST /:user/tasks
-
-Crea una task del usuario dado en la URL con los datos dados en el cuerpo de la petición (Devuelve un Json con la task creada):
-* 'label' - String: campo obligatorio, representa el contenido de la task
-* 'deadend' - Date('dd/MM/yyyy'): campo opcional, representa la fecha de finalización de la task
 
 
 ###Filtros de deadend
@@ -140,6 +133,22 @@ Devuelve las tareas del usuario que no poseen deadend
 
 
 *Las fechas dadas por URL deben tener el formato 'dd-MM-yyyy'
+
+
+###Acciones sobre tareas de usuarios
+
+
+####POST /:user/tasks
+
+Crea una task del usuario dado en la URL con los datos dados en el cuerpo de la petición (Devuelve un Json con la task creada):
+* 'label' - String: campo obligatorio, representa el contenido de la task
+* 'deadend' - Date('dd/MM/yyyy'): campo opcional, representa la fecha de finalización de la task
+ 
+
+####DELETE /:user/tasks/outdate
+
+Elimina las tareas del usuario cuya fecha ya está pasada
+> PELIGRO: ESTA ACCION NO PUEDE DESHACERSE
 
 
 

@@ -29,6 +29,13 @@ object Task
    }
 
 
+   def deleteTasksOfUserEndsBefore(taskowner:String, endsBefore: Date): Int = DB.withConnection
+   {
+      implicit c => SQL("delete from task where taskowner = {taskowner} and deadend < {endsBefore}").
+         on('taskowner -> taskowner, 'endsBefore -> endsBefore).executeUpdate()
+   }
+
+
    /**
     * Devuelve las tareas de un usuario
     * @param taskowner propietario de las tareas a recuperar

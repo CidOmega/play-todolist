@@ -24,7 +24,11 @@ GET     /:owner                  controllers.Users.getUser(owner: String)
 
 # Tasks de users
 GET     /:owner/tasks            controllers.Users.getTasks(owner: String)
+
+
+# Acciones sobre tasks de Users
 POST    /:owner/tasks            controllers.Users.createTask(owner: String)
+DELETE  /:owner/tasks/outdate    controllers.Users.deleteTasksOutdate(owner: String)
 
 
 # Tasks de users con filtros de fecha

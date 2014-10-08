@@ -171,4 +171,17 @@ object Users extends Controller
          }
       )
    }
+
+
+   def deleteTasksOutdate(taskowner: String) = Action
+   {
+      if (User.Exists(taskowner))
+      {
+         Ok(Task.deleteTasksOfUserEndsBefore(taskowner, Global.Today) + " tareas borradas")
+      }
+      else
+      {
+         NotFound ("El usuario solicitado no existe")
+      }
+   }
 }
