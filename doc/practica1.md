@@ -60,7 +60,7 @@ Esta versión a introducido un fuerte cambio en la app, pasando de un sencillo f
         "owner":{
             "nick":"edgar"
         },
-        "deadend":"-"
+        "deadend":null
     }
 
 

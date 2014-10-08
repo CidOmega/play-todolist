@@ -145,7 +145,7 @@ object Task
          "id" -> task.id,
          "label" -> task.label,
          "owner" -> task.owner,
-         "deadend" -> JsString(task.deadend.map(formater.format(_)).getOrElse("-"))
+         "deadend" -> JsString(task.deadend.map(formater.format(_)).getOrElse(null))
       )
    }
 
