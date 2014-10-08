@@ -124,6 +124,11 @@ Devuelve las tareas del usuario que finalizan estrictamente antes de la fecha da
 Devuelve las tareas del usuario que finalizan en el rango de fechas [rangeBegin,rangeEnd] dadas en la URL*
  
 
+####GET /:user/tasks/ends_today
+
+Devuelve las tareas del usuario que finalizan hoy*
+ 
+
 ####GET /:user/tasks/no_deadend
 
 Devuelve las tareas del usuario que no poseen deadend

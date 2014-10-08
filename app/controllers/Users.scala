@@ -70,6 +70,19 @@ object Users extends Controller
    }
 
 
+   def getTasksEndsToday(taskowner: String) = Action
+   {
+      if (User.Exists(taskowner))
+      {
+         Ok(Json.toJson (Task.tasksOfUserEndsAt(taskowner, Global.Today)))
+      }
+      else
+      {
+         NotFound ("El usuario solicitado no existe")
+      }
+   }
+
+
    def getTasksEndsBefore(taskowner: String, endsBefore: String) = Action
    {
       Global.dateQueryStringParse(endsBefore) match
