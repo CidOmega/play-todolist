@@ -74,12 +74,12 @@ Esta versión a introducido un fuerte cambio en la app, pasando de un sencillo f
 ###Tasks en general
 
 
-####GET /tasks/:id
+####GET /tasks/[id]
 
 Devuelve la task con el id dado en la URL
 
 
-####DELETE /tasks/:id
+####DELETE /tasks/[id]
 
 Elimina la task con el id dado en la URL
 > PELIGRO: ESTA ACCION NO PUEDE DESHACERSE
@@ -88,12 +88,12 @@ Elimina la task con el id dado en la URL
 ###Datos Usuarios
 
 
-####GET /:user
+####GET /[user]
 
 Devuelve el usuario dado en la URL (solo el nick, por ahora)
 
 
-####GET /:user/tasks
+####GET /[user]/tasks
 
 Devuelve todas las tasks del usuario dado en la URL
 
@@ -101,37 +101,37 @@ Devuelve todas las tasks del usuario dado en la URL
 ###Filtros de deadend
  
 
-####GET /:user/tasks/ends_after?endsAfter=<fecha>
+####GET /[user]/tasks/ends_after?endsAfter=[fecha]
 
 Devuelve las tareas del usuario que finalizan estrictamente despues de la fecha dada en la URL*
  
 
-####GET /:user/tasks/ends_at?endsAt=<fecha>
+####GET /[user]/tasks/ends_at?endsAt=[fecha]
 
 Devuelve las tareas del usuario que finalizan el dia de la fecha dada en la URL*
  
 
-####GET /:user/tasks/ends_before?endsBefore=<fecha>
+####GET /[user]/tasks/ends_before?endsBefore=[fecha]
 
 Devuelve las tareas del usuario que finalizan estrictamente antes de la fecha dada en la URL*
  
 
-####GET /:user/tasks/ends_between?rangeBegin=<fecha>&rangeEnd=<fecha>
+####GET /[user]/tasks/ends_between?rangeBegin=[fecha]&rangeEnd=[fecha]
 
 Devuelve las tareas del usuario que finalizan en el rango de fechas [rangeBegin,rangeEnd] dadas en la URL*
  
 
-####GET /:user/tasks/ends_today
+####GET /[user]/tasks/ends_today
 
 Devuelve las tareas del usuario que finalizan hoy
  
 
-####GET /:user/tasks/outdate
+####GET /[user]/tasks/outdate
 
 Devuelve las tareas del usuario cuya fecha ya está pasada
  
 
-####GET /:user/tasks/no_deadend
+####GET /[user]/tasks/no_deadend
 
 Devuelve las tareas del usuario que no poseen deadend
 
@@ -142,14 +142,14 @@ Devuelve las tareas del usuario que no poseen deadend
 ###Acciones sobre tareas de usuarios
 
 
-####POST /:user/tasks
+####POST /[user]/tasks
 
 Crea una task del usuario dado en la URL con los datos dados en el cuerpo de la petición (Devuelve un Json con la task creada):
 * 'label' - String: campo obligatorio, representa el contenido de la task
 * 'deadend' - Date('dd/MM/yyyy'): campo opcional, representa la fecha de finalización de la task
  
 
-####DELETE /:user/tasks/outdate
+####DELETE /[user]/tasks/outdate
 
 Elimina las tareas del usuario cuya fecha ya está pasada
 > PELIGRO: ESTA ACCION NO PUEDE DESHACERSE
@@ -166,7 +166,7 @@ Devuelve todas las tasks sin usuario
 
 ####POST /tasks
 
-Crea una task sin usuario (tiene el mismo formato de parametros que POST /:user/tasks)
+Crea una task sin usuario (tiene el mismo formato de parametros que POST /[user]/tasks)
 
 
 ####/ui[/...]
