@@ -82,6 +82,7 @@ Devuelve la task con el id dado en la URL
 ####DELETE /tasks/:id
 
 Elimina la task con el id dado en la URL
+> PELIGRO: ESTA ACCION NO PUEDE DESHACERSE
 
 
 ###Datos Usuarios
@@ -180,3 +181,42 @@ La interfaz gráfica (e hijas) siguen funcionando y se les ha incluido el campo 
 ####Ninguna
 
 Pero se prevee que las funciones actualmente marcadas como obsoletas sean eliminadas en futuras versiones
+
+
+
+##Detalles de implementación
+
+
+###Controllers
+
+
+####Global
+
+Contiene formularios y funciones que en principio se podrán llamar desde distintos Controllers (Parseo de fechas, formularios, etc.)
+> Se plantea seriamente para la v0.2 eliminarlo y refactorizar (mover) todo a diversas "Cajas de herramientas" de un paquete llamado 'util', Ej.: 'DateUtil', 'FormUtil', etc. (nombres provisionales)
+
+
+####Tasks
+
+Contiene las funciones para mostrar los detalles de una tarea y para eliminarla (y funciones obsoletas varias)
+
+
+####Ui
+
+Contiene las funciones obsoletas de la Ui
+
+
+####Users
+
+Contiene las funciones referentes a los usuarios y sus listas de tareas
+> Se plantea el refactorizar los filtros de fecha (los cuales han sido más prolificos de lo pensado en un primer momento) a un nuevo Controller en la v0.2
+
+
+###Models
+
+Contiene las clases Task y User las cuales son el corazón de la app, cada una posee las funciones que retornan instancias o listas de instancias de su propio tipo.
+
+
+###Views
+
+Contiene los html de la ui (obsoletos)
