@@ -14,29 +14,10 @@ class TaskSpec extends Specification {
 
    "Task" should {
 
-      var listTasks : List[Long] = Nil
-
-      def before: Unit =
-      {
-         listTasks = Nil
-      }
-
-      def addToListTasks(id: Long): Unit =
-      {
-         listTasks = id :: listTasks
-      }
-
-      def after: Unit =
-      {
-         listTasks.foreach{ id => Task.delete(id) }
-      }
-
       "Crear tareas correctamente" in new WithApplication{
          var ret = Task.create("Tarea de prueba", "edgar", Some(new Timestamp(754182000000L)))
 
          ret must beSome(be_>(-1L))
-
-         addToListTasks(ret.get)
       }
 
       "Recuperar todos los datos de la tarea existente y None de la no existente" in new WithApplication() {
@@ -45,7 +26,6 @@ class TaskSpec extends Specification {
          val deadend : Option[Date] = Some(new Timestamp(754182000000L))//754182000000L == 25/11/1993
 
          var id = Task.create(label, userNick, deadend).get
-         addToListTasks(id)
 
          Task.readOption(id) must beSome(Task(id ,label, User(userNick), deadend))
          Task.readOption(-1L) must beNone
@@ -57,7 +37,6 @@ class TaskSpec extends Specification {
          val deadend : Option[Date] = Some(new Timestamp(754182000000L))//754182000000L == 25/11/1993
 
          var id = Task.create(label, userNick, deadend).get
-         //addToListTasks(id) //No necesario porque se borra en el propio test
 
          Task.readOption(id) must beSome
          Task.delete(id) === 1
