@@ -12,31 +12,36 @@ import java.sql.{Timestamp} //Esto por listillo (aunque el unico problema era el
 @RunWith(classOf[JUnitRunner])
 class TaskSpec extends Specification {
 
+
+   val label = "Tarea de prueba"
+   val userNick = "edgar"
+   val fechas : Array[Option[Date]] = Array(
+      Some(new Timestamp(754182000000L)),//754182000000L == 25/11/1993
+      Some(new Timestamp(785718000000L)),//785718000000L == 25/11/1994
+      Some(new Timestamp(817254000000L)),//817254000000L == 25/11/1995
+      Some(new Timestamp(848876400000L)),//848876400000L == 25/11/1996
+      Some(new Timestamp(880412400000L)))//880412400000L == 25/11/1997
+
+
    "Task sobre tareas de usuarios" should {
 
       "Crear tareas correctamente" in new WithApplication{
-         var ret = Task.create("Tarea de prueba", "edgar", Some(new Timestamp(754182000000L)))
+         var ret = Task.create("Tarea de prueba", "edgar", fechas(0))
 
          ret must beSome(be_>(-1L))
       }
 
       "Recuperar todos los datos de la tarea existente y None de la no existente" in new WithApplication() {
-         val label = "Tarea de prueba"
-         val userNick = "edgar"
-         val deadend : Option[Date] = Some(new Timestamp(754182000000L))//754182000000L == 25/11/1993
 
-         var id = Task.create(label, userNick, deadend).get
+         var id = Task.create(label, userNick, fechas(0)).get
 
-         Task.readOption(id) must beSome(Task(id ,label, User(userNick), deadend))
+         Task.readOption(id) must beSome(Task(id ,label, User(userNick), fechas(0)))
          Task.readOption(-1L) must beNone
       }
 
       "Borrar las tareas correctamente" in new WithApplication() {
-         val label = "Tarea de prueba"
-         val userNick = "edgar"
-         val deadend : Option[Date] = Some(new Timestamp(754182000000L))//754182000000L == 25/11/1993
 
-         var id = Task.create(label, userNick, deadend).get
+         var id = Task.create(label, userNick, fechas(0)).get
 
          Task.readOption(id) must beSome
          Task.delete(id) === 1
@@ -47,13 +52,6 @@ class TaskSpec extends Specification {
       }
 
       "Borrar las tareas anteriores a cierta fecha correctamente" in new WithApplication() {
-         val label = "Tarea de prueba"
-         val userNick = "edgar"
-         val fechas : Array[Option[Date]] = Array(
-            Some(new Timestamp(754182000000L)),//754182000000L == 25/11/1993
-            Some(new Timestamp(785718000000L)),//754182000000L == 25/11/1994
-            Some(new Timestamp(817254000000L)),//754182000000L == 25/11/1995
-            Some(new Timestamp(848876400000L)))//754182000000L == 25/11/1996
 
          Task.create(label, userNick, fechas(0))
          Task.create(label + label, userNick, fechas(1))
@@ -72,21 +70,18 @@ class TaskSpec extends Specification {
       }
 
       "Recuperar bien todas las tareas de un usuario" in new WithApplication() {
-         val label = "Tarea de prueba"
-         val userNick = "edgar"
-         val deadend : Option[Date] = Some(new Timestamp(754182000000L))//754182000000L == 25/11/1993
 
-         Task.create(label, userNick, deadend)
-         Task.create(label+label, userNick, deadend)
-         Task.create(label, deadend)
-         Task.create(label, "domingo", deadend)
+         Task.create(label, userNick, fechas(0))
+         Task.create(label+label, userNick, fechas(0))
+         Task.create(label, fechas(0))
+         Task.create(label, "domingo", fechas(0))
 
          val tasks = Task.allOfUser(userNick).toArray
 
          tasks.length === 2
          //No se como hacer que ignore el id
-         tasks(0) === Task(tasks(0).id, label, User(userNick), deadend)
-         tasks(1) === Task(tasks(1).id, label+label, User(userNick), deadend)
+         tasks(0) === Task(tasks(0).id, label, User(userNick), fechas(0))
+         tasks(1) === Task(tasks(1).id, label+label, User(userNick), fechas(0))
          tasks(0).id !== tasks(1).id
       }
 
@@ -95,13 +90,10 @@ class TaskSpec extends Specification {
    "Task sobre filtros de deadend" should {
 
       "Devolver solo tareas sin deadend" in new WithApplication() {
-         val label = "Tarea de prueba"
-         val userNick = "edgar"
-         val deadend : Option[Date] = Some(new Timestamp(754182000000L))//754182000000L == 25/11/1993
 
          Task.create(label, userNick, None)
          Task.create(label+label, userNick, None)
-         Task.create("", userNick, deadend)//Con fecha del mismo usuario, no debe recuperarse
+         Task.create("", userNick, fechas(0))//Con fecha del mismo usuario, no debe recuperarse
          Task.create(label, "domingo", None)//Sin fecha pero de otro user, no debe recuperarse
 
          val tasks = Task.tasksOfUserWithoutDeadend(userNick).toArray
@@ -114,14 +106,6 @@ class TaskSpec extends Specification {
       }
 
       "Devolver solo tareas con deadend incluido en el rango dado" in new WithApplication() {
-         val label = "Tarea de prueba"
-         val userNick = "edgar"
-         val fechas : Array[Option[Date]] = Array(
-            Some(new Timestamp(754182000000L)),//754182000000L == 25/11/1993
-            Some(new Timestamp(785718000000L)),//785718000000L == 25/11/1994
-            Some(new Timestamp(817254000000L)),//817254000000L == 25/11/1995
-            Some(new Timestamp(848876400000L)),//848876400000L == 25/11/1996
-            Some(new Timestamp(880412400000L)))//880412400000L == 25/11/1997
 
          Task.create(label, userNick, fechas(0))
          Task.create(label + label, userNick, fechas(1))
@@ -154,29 +138,25 @@ class TaskSpec extends Specification {
       }
 
       "Recuperar todos los datos de la tarea existente y None de la no existente" in new WithApplication() {
-         val label = "Tarea de prueba"
-         val deadend : Option[Date] = Some(new Timestamp(754182000000L))//754182000000L == 25/11/1993
 
-         var id = Task.create(label, deadend).get
+         var id = Task.create(label, fechas(0)).get
 
-         Task.readOption(id) must beSome(Task(id ,label, User("tasks"), deadend))
+         Task.readOption(id) must beSome(Task(id ,label, User("tasks"), fechas(0)))
          Task.readOption(-1L) must beNone
       }
 
       "Recuperar bien las tareas anonimas (allAnonimus)" in new WithApplication() {
-         val label = "Tarea de prueba"
-         val deadend : Option[Date] = Some(new Timestamp(754182000000L))//754182000000L == 25/11/1993
 
-         Task.create(label, deadend)
-         Task.create(label+label, deadend)
-         Task.create("Tarea que no debe devolverse", "edgar", deadend)
+         Task.create(label, fechas(0))
+         Task.create(label+label, fechas(0))
+         Task.create("Tarea que no debe devolverse", "edgar", fechas(0))
 
          val tasks = Task.allAnonimus.toArray
 
          tasks.length === 2
          //No se como hacer que ignore el id
-         tasks(0) === Task(tasks(0).id, label, User("tasks"), deadend)
-         tasks(1) === Task(tasks(1).id, label+label, User("tasks"), deadend)
+         tasks(0) === Task(tasks(0).id, label, User("tasks"), fechas(0))
+         tasks(1) === Task(tasks(1).id, label+label, User("tasks"), fechas(0))
          tasks(0).id !== tasks(1).id
       }
 
