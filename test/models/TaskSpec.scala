@@ -13,8 +13,18 @@ import java.sql.{Timestamp} //Esto por listillo (aunque el unico problema era el
 class TaskSpec extends Specification {
 
 
-   val label = "Tarea de prueba"
-   val userNick = "edgar"
+   val labels = Array(
+            "Tarea de prueba",
+            "Tarea de prueba2",
+            "Tarea de prueba3",
+            "Tarea de prueba4",
+            "")
+
+   val userNicks = Array(
+            "edgar",
+            "domingo")
+   val anonymusNick = "tasks"
+
    val fechas : Array[Option[Date]] = Array(
       Some(new Timestamp(754182000000L)),//754182000000L == 25/11/1993
       Some(new Timestamp(785718000000L)),//785718000000L == 25/11/1994
@@ -26,22 +36,22 @@ class TaskSpec extends Specification {
    "Task sobre tareas de usuarios" should {
 
       "Crear tareas correctamente" in new WithApplication{
-         var ret = Task.create("Tarea de prueba", "edgar", fechas(0))
+         var ret = Task.create(labels(0), userNicks(0), fechas(0))
 
          ret must beSome(be_>(-1L))
       }
 
       "Recuperar todos los datos de la tarea existente y None de la no existente" in new WithApplication() {
 
-         var id = Task.create(label, userNick, fechas(0)).get
+         var id = Task.create(labels(0), userNicks(0), fechas(0)).get
 
-         Task.readOption(id) must beSome(Task(id ,label, User(userNick), fechas(0)))
+         Task.readOption(id) must beSome(Task(id ,labels(0), User(userNicks(0)), fechas(0)))
          Task.readOption(-1L) must beNone
       }
 
       "Borrar las tareas correctamente" in new WithApplication() {
 
-         var id = Task.create(label, userNick, fechas(0)).get
+         var id = Task.create(labels(0), userNicks(0), fechas(0)).get
 
          Task.readOption(id) must beSome
          Task.delete(id) === 1
@@ -53,35 +63,35 @@ class TaskSpec extends Specification {
 
       "Borrar las tareas anteriores a cierta fecha correctamente" in new WithApplication() {
 
-         Task.create(label, userNick, fechas(0))
-         Task.create(label + label, userNick, fechas(1))
-         Task.create(label + label + label, userNick, fechas(2))
-         Task.create("", userNick, fechas(3))
+         Task.create(labels(0), userNicks(0), fechas(0))
+         Task.create(labels(1), userNicks(0), fechas(1))
+         Task.create(labels(2), userNicks(0), fechas(2))
+         Task.create(labels(3), userNicks(0), fechas(3))
 
-         Task.deleteTasksOfUserEndsBefore(userNick, fechas(2).get) === 2
+         Task.deleteTasksOfUserEndsBefore(userNicks(0), fechas(2).get) === 2
 
-         val tasks = Task.allOfUser(userNick).toArray
+         val tasks = Task.allOfUser(userNicks(0)).toArray
 
          tasks.length === 2
          //No se como hacer que ignore el id
-         tasks(0) === Task(tasks(0).id, label + label + label, User(userNick), fechas(2))
-         tasks(1) === Task(tasks(1).id, "", User(userNick), fechas(3))
+         tasks(0) === Task(tasks(0).id, labels(2), User(userNicks(0)), fechas(2))
+         tasks(1) === Task(tasks(1).id, labels(3), User(userNicks(0)), fechas(3))
          tasks(0).id !== tasks(1).id
       }
 
       "Recuperar bien todas las tareas de un usuario" in new WithApplication() {
 
-         Task.create(label, userNick, fechas(0))
-         Task.create(label+label, userNick, fechas(0))
-         Task.create(label, fechas(0))
-         Task.create(label, "domingo", fechas(0))
+         Task.create(labels(0), userNicks(0), fechas(0))
+         Task.create(labels(1), userNicks(0), fechas(0))
+         Task.create(labels(2), fechas(0))
+         Task.create(labels(3), userNicks(1), fechas(0))
 
-         val tasks = Task.allOfUser(userNick).toArray
+         val tasks = Task.allOfUser(userNicks(0)).toArray
 
          tasks.length === 2
          //No se como hacer que ignore el id
-         tasks(0) === Task(tasks(0).id, label, User(userNick), fechas(0))
-         tasks(1) === Task(tasks(1).id, label+label, User(userNick), fechas(0))
+         tasks(0) === Task(tasks(0).id, labels(0), User(userNicks(0)), fechas(0))
+         tasks(1) === Task(tasks(1).id, labels(1), User(userNicks(0)), fechas(0))
          tasks(0).id !== tasks(1).id
       }
 
@@ -91,37 +101,37 @@ class TaskSpec extends Specification {
 
       "Devolver solo tareas sin deadend" in new WithApplication() {
 
-         Task.create(label, userNick, None)
-         Task.create(label+label, userNick, None)
-         Task.create("", userNick, fechas(0))//Con fecha del mismo usuario, no debe recuperarse
-         Task.create(label, "domingo", None)//Sin fecha pero de otro user, no debe recuperarse
+         Task.create(labels(0), userNicks(0), None)
+         Task.create(labels(1), userNicks(0), None)
+         Task.create(labels(2), userNicks(0), fechas(0))//Con fecha del mismo usuario, no debe recuperarse
+         Task.create(labels(3), userNicks(1), None)//Sin fecha pero de otro user, no debe recuperarse
 
-         val tasks = Task.tasksOfUserWithoutDeadend(userNick).toArray
+         val tasks = Task.tasksOfUserWithoutDeadend(userNicks(0)).toArray
 
          tasks.length === 2
          //No se como hacer que ignore el id
-         tasks(0) === Task(tasks(0).id, label, User(userNick), None)
-         tasks(1) === Task(tasks(1).id, label+label, User(userNick), None)
+         tasks(0) === Task(tasks(0).id, labels(0), User(userNicks(0)), None)
+         tasks(1) === Task(tasks(1).id, labels(1), User(userNicks(0)), None)
          tasks(0).id !== tasks(1).id
       }
 
       "Devolver solo tareas con deadend incluido en el rango dado" in new WithApplication() {
 
-         Task.create(label, userNick, fechas(0))
-         Task.create(label + label, userNick, fechas(1))
-         Task.create(label + label + label, userNick, fechas(2))
-         Task.create("", userNick, fechas(3))
-         Task.create(label, userNick, fechas(4))
-         Task.create(label + label + label, userNick, None) //Tarea sin fecha, no se debuelve
-         Task.create(label + label + label, "domingo", fechas(2)) //Tarea en el rango, pero de otro user, no se debuelve
+         Task.create(labels(0), userNicks(0), fechas(0))
+         Task.create(labels(1), userNicks(0), fechas(1))
+         Task.create(labels(2), userNicks(0), fechas(2))
+         Task.create(labels(3), userNicks(0), fechas(3))
+         Task.create(labels(4), userNicks(0), fechas(4))
+         Task.create(labels(0), userNicks(0), None) //Tarea sin fecha, no se debuelve
+         Task.create(labels(0), userNicks(1), fechas(2)) //Tarea en el rango, pero de otro user, no se debuelve
 
-         val tasks = Task.tasksOfUserEndsBetween(userNick, fechas(1).get, fechas(3).get).toArray
+         val tasks = Task.tasksOfUserEndsBetween(userNicks(0), fechas(1).get, fechas(3).get).toArray
 
          tasks.length === 3
          //No se como hacer que ignore el id
-         tasks(0) === Task(tasks(0).id, label + label, User(userNick), fechas(1))
-         tasks(1) === Task(tasks(1).id, label + label + label, User(userNick), fechas(2))
-         tasks(2) === Task(tasks(2).id, "", User(userNick), fechas(3))
+         tasks(0) === Task(tasks(0).id, labels(1), User(userNicks(0)), fechas(1))
+         tasks(1) === Task(tasks(1).id, labels(2), User(userNicks(0)), fechas(2))
+         tasks(2) === Task(tasks(2).id, labels(3), User(userNicks(0)), fechas(3))
          tasks(0).id !== tasks(1).id
          tasks(0).id !== tasks(2).id
          tasks(1).id !== tasks(2).id
@@ -129,37 +139,37 @@ class TaskSpec extends Specification {
 
       "Devolver solo tareas con deadend anterior a la fecha dada" in new WithApplication() {
 
-         Task.create(label, userNick, fechas(0))
-         Task.create(label + label, userNick, fechas(1))
-         Task.create(label + label + label, userNick, fechas(2))//Tarea justo en la fecha, no se devuelve
-         Task.create("", userNick, fechas(3))
-         Task.create(label + label + label, userNick, None) //Tarea sin fecha, no se debuelve
-         Task.create(label, "domingo", fechas(1)) //Tarea en fecha devolvible, pero de otro user, no se debuelve
+         Task.create(labels(0), userNicks(0), fechas(0))
+         Task.create(labels(1), userNicks(0), fechas(1))
+         Task.create(labels(2), userNicks(0), fechas(2))//Tarea justo en la fecha, no se devuelve
+         Task.create(labels(3), userNicks(0), fechas(3))
+         Task.create(labels(4), userNicks(0), None) //Tarea sin fecha, no se debuelve
+         Task.create(labels(0), userNicks(1), fechas(1)) //Tarea en fecha devolvible, pero de otro user, no se debuelve
 
-         val tasks = Task.tasksOfUserEndsBefore(userNick, fechas(2).get).toArray
+         val tasks = Task.tasksOfUserEndsBefore(userNicks(0), fechas(2).get).toArray
 
          tasks.length === 2
          //No se como hacer que ignore el id
-         tasks(0) === Task(tasks(0).id, label, User(userNick), fechas(0))
-         tasks(1) === Task(tasks(1).id, label + label, User(userNick), fechas(1))
+         tasks(0) === Task(tasks(0).id, labels(0), User(userNicks(0)), fechas(0))
+         tasks(1) === Task(tasks(1).id, labels(1), User(userNicks(0)), fechas(1))
          tasks(0).id !== tasks(1).id
       }
 
       "Devolver solo tareas con deadend posterior a la fecha dada" in new WithApplication() {
 
-         Task.create(label, userNick, fechas(0))
-         Task.create(label + label, userNick, fechas(1))//Tarea justo en la fecha, no se devuelve
-         Task.create(label + label + label, userNick, fechas(2))
-         Task.create("", userNick, fechas(3))
-         Task.create(label + label + label, userNick, None) //Tarea sin fecha, no se debuelve
-         Task.create(label, "domingo", fechas(2)) //Tarea en fecha devolvible, pero de otro user, no se debuelve
+         Task.create(labels(0), userNicks(0), fechas(0))
+         Task.create(labels(1), userNicks(0), fechas(1))//Tarea justo en la fecha, no se devuelve
+         Task.create(labels(2), userNicks(0), fechas(2))
+         Task.create(labels(3), userNicks(0), fechas(3))
+         Task.create(labels(4), userNicks(0), None) //Tarea sin fecha, no se debuelve
+         Task.create(labels(0), userNicks(1), fechas(2)) //Tarea en fecha devolvible, pero de otro user, no se debuelve
 
-         val tasks = Task.tasksOfUserEndsAfter(userNick, fechas(1).get).toArray
+         val tasks = Task.tasksOfUserEndsAfter(userNicks(0), fechas(1).get).toArray
 
          tasks.length === 2
          //No se como hacer que ignore el id
-         tasks(0) === Task(tasks(0).id, label + label + label, User(userNick), fechas(2))
-         tasks(1) === Task(tasks(1).id, "", User(userNick), fechas(3))
+         tasks(0) === Task(tasks(0).id, labels(2), User(userNicks(0)), fechas(2))
+         tasks(1) === Task(tasks(1).id, labels(3), User(userNicks(0)), fechas(3))
          tasks(0).id !== tasks(1).id
       }
 
@@ -168,31 +178,31 @@ class TaskSpec extends Specification {
    "Task sobre tareas anonimas" should {
 
       "Crear tareas anonimas correctamente" in new WithApplication{
-         var ret = Task.create("Tarea de prueba", Some(new Timestamp(754182000000L)))
+         var ret = Task.create(labels(0), fechas(0))
 
          ret must beSome(be_>(-1L))
       }
 
       "Recuperar todos los datos de la tarea existente y None de la no existente" in new WithApplication() {
 
-         var id = Task.create(label, fechas(0)).get
+         var id = Task.create(labels(0), fechas(0)).get
 
-         Task.readOption(id) must beSome(Task(id ,label, User("tasks"), fechas(0)))
+         Task.readOption(id) must beSome(Task(id ,labels(0), User(anonymusNick), fechas(0)))
          Task.readOption(-1L) must beNone
       }
 
       "Recuperar bien las tareas anonimas (allAnonimus)" in new WithApplication() {
 
-         Task.create(label, fechas(0))
-         Task.create(label+label, fechas(0))
-         Task.create("Tarea que no debe devolverse", "edgar", fechas(0))
+         Task.create(labels(0), fechas(0))
+         Task.create(labels(1), fechas(0))
+         Task.create(labels(2), userNicks(0), fechas(0))
 
          val tasks = Task.allAnonimus.toArray
 
          tasks.length === 2
          //No se como hacer que ignore el id
-         tasks(0) === Task(tasks(0).id, label, User("tasks"), fechas(0))
-         tasks(1) === Task(tasks(1).id, label+label, User("tasks"), fechas(0))
+         tasks(0) === Task(tasks(0).id, labels(0), User(anonymusNick), fechas(0))
+         tasks(1) === Task(tasks(1).id, labels(1), User(anonymusNick), fechas(0))
          tasks(0).id !== tasks(1).id
       }
 
