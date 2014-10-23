@@ -113,6 +113,36 @@ class TaskSpec extends Specification {
          tasks(0).id !== tasks(1).id
       }
 
+      "Devolver solo tareas con deadend incluido en el rango dado" in new WithApplication() {
+         val label = "Tarea de prueba"
+         val userNick = "edgar"
+         val fechas : Array[Option[Date]] = Array(
+            Some(new Timestamp(754182000000L)),//754182000000L == 25/11/1993
+            Some(new Timestamp(785718000000L)),//785718000000L == 25/11/1994
+            Some(new Timestamp(817254000000L)),//817254000000L == 25/11/1995
+            Some(new Timestamp(848876400000L)),//848876400000L == 25/11/1996
+            Some(new Timestamp(880412400000L)))//880412400000L == 25/11/1997
+
+         Task.create(label, userNick, fechas(0))
+         Task.create(label + label, userNick, fechas(1))
+         Task.create(label + label + label, userNick, fechas(2))
+         Task.create("", userNick, fechas(3))
+         Task.create(label, userNick, fechas(4))
+         Task.create(label + label + label, userNick, None) //Tarea sin fecha, no se debuelve
+         Task.create(label + label + label, "domingo", fechas(2)) //Tarea en el rango, pero de otro user, no se debuelve
+
+         val tasks = Task.tasksOfUserEndsBetween(userNick, fechas(1).get, fechas(3).get).toArray
+
+         tasks.length === 3
+         //No se como hacer que ignore el id
+         tasks(0) === Task(tasks(0).id, label + label, User(userNick), fechas(1))
+         tasks(1) === Task(tasks(1).id, label + label + label, User(userNick), fechas(2))
+         tasks(2) === Task(tasks(2).id, "", User(userNick), fechas(3))
+         tasks(0).id !== tasks(1).id
+         tasks(0).id !== tasks(2).id
+         tasks(1).id !== tasks(2).id
+      }
+
    }
 
    "Task sobre tareas anonimas" should {
