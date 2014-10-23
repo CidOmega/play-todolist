@@ -72,6 +72,7 @@ class TaskSpec extends Specification {
 
          Task.create(label, deadend)
          Task.create(label+label, deadend)
+         Task.create("Tarea que no debe devolverse", "edgar", deadend)
 
          val tasks = Task.allAnonimus.toArray
 
