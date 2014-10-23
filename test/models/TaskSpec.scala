@@ -46,5 +46,37 @@ class TaskSpec extends Specification {
          Task.delete(-1L) === 0
       }
 
+      "Crear tareas anonimas correctamente" in new WithApplication{
+         var ret = Task.create("Tarea de prueba", Some(new Timestamp(754182000000L)))
+
+         ret must beSome(be_>(-1L))
+      }
+
+      "Recuperar todos los datos de la tarea existente y None de la no existente" in new WithApplication() {
+         val label = "Tarea de prueba"
+         val deadend : Option[Date] = Some(new Timestamp(754182000000L))//754182000000L == 25/11/1993
+
+         var id = Task.create(label, deadend).get
+
+         Task.readOption(id) must beSome(Task(id ,label, User("tasks"), deadend))
+         Task.readOption(-1L) must beNone
+      }
+
+      "Recuperar bien las tareas anonimas (allAnonimus)" in new WithApplication() {
+         val label = "Tarea de prueba"
+         val deadend : Option[Date] = Some(new Timestamp(754182000000L))//754182000000L == 25/11/1993
+
+         Task.create(label, deadend)
+         Task.create(label+label, deadend)
+
+         val tasks = Task.allAnonimus.toArray
+
+         tasks.length === 2
+         //No se como hacer que ignore el id
+         tasks(0) === Task(tasks(0).id, label, User("tasks"), deadend)
+         tasks(1) === Task(tasks(1).id, label+label, User("tasks"), deadend)
+         tasks(0).id !== tasks(1).id
+      }
+
    }
 }
