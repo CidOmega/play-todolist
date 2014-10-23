@@ -12,7 +12,7 @@ import java.sql.{Timestamp} //Esto por listillo (aunque el unico problema era el
 @RunWith(classOf[JUnitRunner])
 class TaskSpec extends Specification {
 
-   "Task" should {
+   "Task sobre tareas de usuarios" should {
 
       "Crear tareas correctamente" in new WithApplication{
          var ret = Task.create("Tarea de prueba", "edgar", Some(new Timestamp(754182000000L)))
@@ -45,6 +45,10 @@ class TaskSpec extends Specification {
 
          Task.delete(-1L) === 0
       }
+
+   }
+
+   "Task sobre tareas anonimas" should {
 
       "Crear tareas anonimas correctamente" in new WithApplication{
          var ret = Task.create("Tarea de prueba", Some(new Timestamp(754182000000L)))
