@@ -46,6 +46,25 @@ class TaskSpec extends Specification {
          Task.delete(-1L) === 0
       }
 
+      "Recuperar bien todas las tareas de un usuario" in new WithApplication() {
+         val label = "Tarea de prueba"
+         val userNick = "edgar"
+         val deadend : Option[Date] = Some(new Timestamp(754182000000L))//754182000000L == 25/11/1993
+
+         Task.create(label, userNick, deadend)
+         Task.create(label+label, userNick, deadend)
+         Task.create(label, deadend)
+         Task.create(label, "domingo", deadend)
+
+         val tasks = Task.allOfUser(userNick).toArray
+
+         tasks.length === 2
+         //No se como hacer que ignore el id
+         tasks(0) === Task(tasks(0).id, label, User(userNick), deadend)
+         tasks(1) === Task(tasks(1).id, label+label, User(userNick), deadend)
+         tasks(0).id !== tasks(1).id
+      }
+
    }
 
    "Task sobre tareas anonimas" should {
