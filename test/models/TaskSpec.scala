@@ -127,6 +127,24 @@ class TaskSpec extends Specification {
          tasks(1).id !== tasks(2).id
       }
 
+      "Devolver solo tareas con deadend anterior a la fecha dada" in new WithApplication() {
+
+         Task.create(label, userNick, fechas(0))
+         Task.create(label + label, userNick, fechas(1))
+         Task.create(label + label + label, userNick, fechas(2))//Tarea justo en la fecha, no se devuelve
+         Task.create("", userNick, fechas(3))
+         Task.create(label + label + label, userNick, None) //Tarea sin fecha, no se debuelve
+         Task.create(label, "domingo", fechas(1)) //Tarea en fecha devolvible, pero de otro user, no se debuelve
+
+         val tasks = Task.tasksOfUserEndsBefore(userNick, fechas(2).get).toArray
+
+         tasks.length === 2
+         //No se como hacer que ignore el id
+         tasks(0) === Task(tasks(0).id, label, User(userNick), fechas(0))
+         tasks(1) === Task(tasks(1).id, label + label, User(userNick), fechas(1))
+         tasks(0).id !== tasks(1).id
+      }
+
    }
 
    "Task sobre tareas anonimas" should {
