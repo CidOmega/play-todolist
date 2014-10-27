@@ -1,16 +1,18 @@
 import org.specs2.mutable._
 import org.specs2.runner._
+import org.specs2.matcher._
 import org.junit.runner._
 
 import play.api.test._
 import play.api.test.Helpers._
+import play.api.libs.json.{Json, JsValue}
 
 import models._
 import java.util.{Date}
 import java.sql.{Timestamp} //Esto por listillo (aunque el unico problema era el formato de salida...)
 
 @RunWith(classOf[JUnitRunner])
-class TaskSpec extends Specification {
+class TaskSpec extends Specification with JsonMatchers {
 
 
    val labels = Array(
@@ -222,6 +224,19 @@ class TaskSpec extends Specification {
          tasks(0) === Task(tasks(0).id, labels(0), User(anonymusNick), fechas(0))
          tasks(1) === Task(tasks(1).id, labels(1), User(anonymusNick), fechas(0))
          tasks(0).id !== tasks(1).id
+      }
+
+   }
+
+   "Task sobre Json" should {
+
+      "Crear correctamente el Json" in new WithApplication() {
+         val json = Json.stringify(Json.toJson(Task(777, labels(0), User(userNicks(0)), fechas(0))))
+
+         json must /("id" -> 777)
+         json must /("label" -> labels(0))
+         json must /("owner") /("nick" -> userNicks(0))
+         json must /("deadend" -> "25/11/1993")
       }
 
    }
