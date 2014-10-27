@@ -11,7 +11,7 @@ import models.User
 
 
 @RunWith(classOf[JUnitRunner])
-class UserSpec extends Specification {
+class UserSpec extends Specification with JsonMatchers{
 
    "User" should {
 
@@ -54,10 +54,10 @@ class UserSpec extends Specification {
          userOpt.get.nick mustEqual "domingo"
       }
 
-      /*
       "Generar el Json con el nick" in new WithApplication() {
-         Json.toJson(User("Nadie")) must  /("nick" -> "Nadie")
+         val json = Json.stringify(Json.toJson(User("Nadie")))
+
+         json must  /("nick" -> "Nadie")
       }
-      */
    }
 }
