@@ -33,6 +33,8 @@ class UsersSpec extends Specification with JsonMatchers{
       Some(new Timestamp(848876400000L)),//848876400000L == 25/11/1996
       Some(new Timestamp(880412400000L)))//880412400000L == 25/11/1997
 
+   val fechaFuruta = Some(new Timestamp(4130780400000L))//4130780400000L == 25/11/2100
+
    "Users GETs" should {
 
       "Devolver el User en formato Json al hacer GET /<nick existente>" in new WithApplication() {
@@ -80,6 +82,82 @@ class UsersSpec extends Specification with JsonMatchers{
 
       "Devolver 404 al hacer GET /<nick inexistente>/tasks" in new WithApplication() {
          val home = route(FakeRequest(GET, "/" + noUserNick + "/tasks")).get
+
+         status(home) must equalTo(NOT_FOUND)
+         contentType(home) must beSome.which(_ == "text/plain")
+      }
+
+   }
+
+   "User Modificadores" should {
+
+      "Devolver la nueva tarea en formato Json al hacer POST /<nick existente>/tasks y realmente crear la task" in new WithApplication() {
+         val home = route(FakeRequest(POST, "/" + userNicks(0) + "/tasks").
+            withFormUrlEncodedBody(("label",labels(0)),("deadend","25/11/1993"))).get
+
+         status(home) must equalTo(CREATED)
+         contentType(home) must beSome.which(_ == "application/json")
+
+         var jsonString = Json.stringify(contentAsJson(home))
+
+         jsonString must /("id" -> (be_>(-1) ^^ ((_:String).toDouble.toInt)))
+         jsonString must /("label" -> labels(0))
+         jsonString must /("owner") /("nick" -> userNicks(0))
+         jsonString must /("deadend" -> "25/11/1993")
+
+         Task.readOption(1L) must beSome
+      }
+
+      "Devolver 404 al hacer POST /<nick inexistente>/tasks" in new WithApplication() {
+         val home = route(FakeRequest(POST, "/" + noUserNick + "/tasks").
+            withFormUrlEncodedBody(("label",labels(0)),("deadend","25/11/1993"))).get
+
+         status(home) must equalTo(NOT_FOUND)
+         contentType(home) must beSome.which(_ == "text/plain")
+      }
+
+      "Devolver 400 al hacer POST /<nick existente>/tasks con datos incorrectos" in new WithApplication() {
+         var home = route(FakeRequest(POST, "/" + noUserNick + "/tasks").
+            withFormUrlEncodedBody(("deadend","25/11/1993"))).get
+
+         status(home) must equalTo(BAD_REQUEST)
+         contentType(home) must beSome.which(_ == "text/plain")
+
+
+         home = route(FakeRequest(POST, "/" + noUserNick + "/tasks").
+            withFormUrlEncodedBody(("label",labels(0)),("deadend","1993/11/25"))).get
+
+         status(home) must equalTo(BAD_REQUEST)
+         contentType(home) must beSome.which(_ == "text/plain")
+
+
+         home = route(FakeRequest(POST, "/" + noUserNick + "/tasks").
+            withFormUrlEncodedBody(("label",labels(0)),("deadend","32/13/1993"))).get
+
+         status(home) must equalTo(BAD_REQUEST)
+         contentType(home) must beSome.which(_ == "text/plain")
+      }
+
+      "Devolver 400 al hacer DELETE /<nick existente>/tasks/outdate y realmente borrar las tasks" in new WithApplication() {
+         var listaBorrados: List[Long] = Nil
+         for(i <- 1 to 4)
+            listaBorrados = Task.create(labels(i), userNicks(0), fechas(i)).get :: listaBorrados
+
+         var tuplaNoBorrados = (Task.create(labels(4), userNicks(0), fechaFuruta).get, Task.create(labels(4), userNicks(0), None).get)
+
+         val home = route(FakeRequest(DELETE, "/" + userNicks(0) + "/tasks/outdate")).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "text/plain")
+
+         for(j <- listaBorrados)
+            Task.readOption(j) must beNone
+         Task.readOption(tuplaNoBorrados._1) must beSome
+         Task.readOption(tuplaNoBorrados._2) must beSome
+      }
+
+      "Devolver 404 al hacer DELETE /<nick inexistente>/tasks/outdate" in new WithApplication() {
+         val home = route(FakeRequest(DELETE, "/" + noUserNick + "/tasks/outdate")).get
 
          status(home) must equalTo(NOT_FOUND)
          contentType(home) must beSome.which(_ == "text/plain")
