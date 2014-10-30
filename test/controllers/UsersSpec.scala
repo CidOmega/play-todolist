@@ -143,17 +143,25 @@ class UsersSpec extends Specification with JsonMatchers{
          for(i <- 1 to 4)
             listaBorrados = Task.create(labels(i), userNicks(0), fechas(i)).get :: listaBorrados
 
-         var tuplaNoBorrados = (Task.create(labels(4), userNicks(0), fechaFuruta).get, Task.create(labels(4), userNicks(0), None).get)
+         val tuplaNoBorrados = (Task.create(labels(4), userNicks(0), fechaFuruta).get, Task.create(labels(4), userNicks(0), None).get)
 
-         val home = route(FakeRequest(DELETE, "/" + userNicks(0) + "/tasks/outdate")).get
+         var home = route(FakeRequest(DELETE, "/" + userNicks(0) + "/tasks/outdate")).get
 
          status(home) must equalTo(OK)
          contentType(home) must beSome.which(_ == "text/plain")
+         contentAsString(home) must startWith("4")
 
          for(j <- listaBorrados)
             Task.readOption(j) must beNone
          Task.readOption(tuplaNoBorrados._1) must beSome
          Task.readOption(tuplaNoBorrados._2) must beSome
+
+         //2º borrado que no borrará nada pero no fallará
+         home = route(FakeRequest(DELETE, "/" + userNicks(0) + "/tasks/outdate")).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "text/plain")
+         contentAsString(home) must startWith("0")
       }
 
       "Devolver 404 al hacer DELETE /<nick inexistente>/tasks/outdate" in new WithApplication() {
