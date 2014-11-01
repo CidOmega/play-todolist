@@ -103,5 +103,59 @@ class UsersDeadendFunctionsSpec extends Specification with JsonMatchers {
          contentType(home) must beSome.which(_ == "application/json")
          mustBeJsArrayAndHasLength(contentAsJson(home), 2)
       }
+
+      "GET /:owner/tasks/ends_before debe devolver una lista vacia si no existen tareas antes de la fecha dada" in new WithApplication() {
+         for(i <- 0 to 4)
+            Task.create(labels(i), userNicks(0), fechas(i))
+
+         val home = route(FakeRequest(GET, "/" + userNicks(0) + "/tasks/ends_before?endsBefore=" + "25-11-1950")).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "application/json")
+         mustBeJsArrayAndHasLength(contentAsJson(home), 0)
+      }
+
+      "GET /:owner/tasks/ends_before debe devolver una lista con las tareas con deadend antes de la fecha dada" in new WithApplication() {
+         for(i <- 0 to 1)
+         {
+            Task.create(labels(i), userNicks(0), fechas(0))
+            Task.create(labels(i), userNicks(0), fechas(1))//justo en el deadend, no devueltas
+            Task.create(labels(i), userNicks(0), fechas(2))
+         }
+
+         val home = route(FakeRequest(GET, "/" + userNicks(0) + "/tasks/ends_before?endsBefore=" + fechasString(1))).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "application/json")
+         mustBeJsArrayAndHasLength(contentAsJson(home), 2)
+      }
+
+      "GET /:owner/tasks/ends_between debe devolver una lista vacia si no existen tareas entre las fechas dadas" in new WithApplication() {
+         for(i <- 0 to 4)
+            Task.create(labels(i), userNicks(0), fechas(i))
+
+         val home = route(FakeRequest(GET, "/" + userNicks(0) + "/tasks/ends_between?rangeBegin=" + "25-11-1950" + "&rangeEnd=" + "25-11-1960")).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "application/json")
+         mustBeJsArrayAndHasLength(contentAsJson(home), 0)
+      }
+
+      "GET /:owner/tasks/ends_between debe devolver una lista con las tareas con deadend entre las fechas dadas" in new WithApplication() {
+         for(i <- 0 to 1)
+         {
+            Task.create(labels(i), userNicks(0), fechas(0))//fuera del rango, no devueltas
+            Task.create(labels(i), userNicks(0), fechas(1))//justo en el rango, devueltas
+            Task.create(labels(i), userNicks(0), fechas(2))
+            Task.create(labels(i), userNicks(0), fechas(3))//justo en el rango, devueltas
+            Task.create(labels(i), userNicks(0), fechas(4))//fuera del rango, no devueltas
+         }
+
+         val home = route(FakeRequest(GET, "/" + userNicks(0) + "/tasks/ends_between?rangeBegin=" + fechasString(1) + "&rangeEnd=" + fechasString(3))).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "application/json")
+         mustBeJsArrayAndHasLength(contentAsJson(home), 6)
+      }
    }
 }
