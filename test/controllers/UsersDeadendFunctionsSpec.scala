@@ -11,6 +11,7 @@ import models._
 import java.util.{Date}
 import java.sql.{Timestamp}
 
+import controllers.Global
 
 @RunWith(classOf[JUnitRunner])
 class UsersDeadendFunctionsSpec extends Specification with JsonMatchers {
@@ -157,5 +158,37 @@ class UsersDeadendFunctionsSpec extends Specification with JsonMatchers {
          contentType(home) must beSome.which(_ == "application/json")
          mustBeJsArrayAndHasLength(contentAsJson(home), 6)
       }
+   }
+
+   "Filtros con fecha sin parametros" should {
+
+      "GET /:owner/tasks/ends_today debe devolver una lista vacia si no existen tareas a dia de hoy" in new WithApplication() {
+         for(i <- 0 to 4)
+            Task.create(labels(i), userNicks(0), fechas(i))
+
+         val home = route(FakeRequest(GET, "/" + userNicks(0) + "/tasks/ends_today")).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "application/json")
+         mustBeJsArrayAndHasLength(contentAsJson(home), 0)
+      }
+
+      "GET /:owner/tasks/ends_today debe devolver una lista con las tareas con deadend entre las fechas dadas" in new WithApplication() {
+         for(i <- 0 to 2)
+         {
+            Task.create(labels(i), userNicks(0), fechas(0))
+            Task.create(labels(i), userNicks(0), fechas(1))
+            Task.create(labels(i), userNicks(0), fechaFuruta)
+
+            Task.create(labels(i), userNicks(0), Some(Global.Today))
+         }
+
+         val home = route(FakeRequest(GET, "/" + userNicks(0) + "/tasks/ends_today")).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "application/json")
+         mustBeJsArrayAndHasLength(contentAsJson(home), 3)
+      }
+
    }
 }
