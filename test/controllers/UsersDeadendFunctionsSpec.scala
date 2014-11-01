@@ -216,5 +216,33 @@ class UsersDeadendFunctionsSpec extends Specification with JsonMatchers {
          mustBeJsArrayAndHasLength(contentAsJson(home), 4)
       }
 
+      "GET /:owner/tasks/no_deadend debe devolver una lista vacia si no existen tareas sin fecha" in new WithApplication() {
+         for(i <- 0 to 4)
+            Task.create(labels(i), userNicks(0), fechas(i))
+
+         val home = route(FakeRequest(GET, "/" + userNicks(0) + "/tasks/no_deadend")).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "application/json")
+         mustBeJsArrayAndHasLength(contentAsJson(home), 0)
+      }
+
+      "GET /:owner/tasks/no_deadend debe devolver una lista con las tareas sin fecha" in new WithApplication() {
+         for(i <- 0 to 1)
+         {
+            Task.create(labels(i), userNicks(0), fechas(0))
+            Task.create(labels(i), userNicks(0), fechas(1))
+            Task.create(labels(i), userNicks(0), fechaFuruta)
+
+            Task.create(labels(i), userNicks(0), None)
+         }
+
+         val home = route(FakeRequest(GET, "/" + userNicks(0) + "/tasks/no_deadend")).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "application/json")
+         mustBeJsArrayAndHasLength(contentAsJson(home), 2)
+      }
+
    }
 }
