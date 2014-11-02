@@ -15,6 +15,7 @@ class CategorySpecSpec extends Specification with JsonMatchers {
    "Categoria" should{
 
       val user = User("edgar")
+      val noUser = User("no existe")
 
       val names = Array("todo", "remember", "meeting")
 
@@ -28,6 +29,14 @@ class CategorySpecSpec extends Specification with JsonMatchers {
          val cat = Category.readOption(names(0), user.nick)
 
          cat must beSome(Category(names(0), user))
+      }
+
+      "Leer None si no existe la categoría o el user" in new WithApplication() {
+         Category.create(names(0), user.nick)
+
+         val cat = Category.readOption(names(0), noUser.nick)
+
+         cat must beNone
       }
 
    }
