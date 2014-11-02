@@ -66,6 +66,15 @@ class CategorySpecSpec extends Specification with JsonMatchers {
          Category.categoriesFromTask(id).length === 3
       }
 
+      "Generar correctamente el json" in new WithApplication() {
+         var jsonSring = Json.stringify(Json.toJson(Category(names(0), user)))
+
+         jsonSring must /("name" -> names(0))
+         jsonSring must not */("owner")//No queremos los datos del usuario
+         jsonSring must not */("user")//No queremos los datos del usuario
+         jsonSring must not */("nick")//No queremos los datos del usuario
+      }
+
    }
 
 }

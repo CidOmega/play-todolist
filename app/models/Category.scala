@@ -54,4 +54,16 @@ object Category
             case name~owner => Category(name, User.readOption(owner).get) //Si falla el Option.get es que algo ha ido mal
          }
    }
+
+
+   /**
+    * Conversor Category a Json
+    */
+   implicit val categoryWrites = new Writes[Category]
+   {
+      def writes(category: Category) = Json.obj(
+         "name" -> category.name
+         //No queremos los datos del usuario
+      )
+   }
 }
