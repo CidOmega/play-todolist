@@ -50,6 +50,17 @@ class TaskSpec extends Specification with JsonMatchers {
          Task.tasksFromUserCategory(userNicks(0), categorias(0)).length === 2
       }
 
+      "Las tareas deben contener correctamente sus categorias" in new WithApplication() {
+         for(i <- 0 to 1)
+            Category.create(categorias(i), userNicks(0))
+
+         var id = Task.create(labels(0), userNicks(0), None).get
+         for(i <- 0 to 1)
+            Category.addTaskToCategory(id, categorias(i), userNicks(0))
+
+         Task.readOption(id).get.categories.length === 2
+      }
+
    }
 
 

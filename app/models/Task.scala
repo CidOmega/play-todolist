@@ -8,7 +8,7 @@ import play.api.libs.json._
 
 import java.util.{Date}
 
-case class Task(id: Long, label: String, owner: User, deadend: Option[Date])
+case class Task(id: Long, label: String, owner: User, deadend: Option[Date], categories: List[Category] = Nil)
 
 object Task
 {
@@ -162,7 +162,7 @@ object Task
    {
       get[Long]("id") ~ get[String]("label") ~ get[String]("taskowner") ~ get[Option[Date]]("deadend") map
       {
-         case id~label~taskowner~deadend => Task(id, label, User.read(taskowner), deadend)
+         case id~label~taskowner~deadend => Task(id, label, User.read(taskowner), deadend, Category.categoriesFromTask(id))
       }
    }
 

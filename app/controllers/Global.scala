@@ -16,7 +16,12 @@ object Global extends Controller
          "id" -> ignored(-1L),
          "label" -> nonEmptyText,
          "owner" -> ignored(User("Nadie")),
-         "deadend" -> optional(date("dd/MM/yyyy"))
+         "deadend" -> optional(date("dd/MM/yyyy")),
+         "categories" -> list(mapping
+            (
+               "name" -> nonEmptyText,
+               "owner" -> ignored(User("mismo que la tarea"))
+            )(Category.apply)(Category.unapply))
       )(Task.apply)(Task.unapply))
 
    val dateQueryStringFormat = "dd-MM-yyyy"
