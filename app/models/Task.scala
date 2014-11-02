@@ -12,6 +12,18 @@ case class Task(id: Long, label: String, owner: User, deadend: Option[Date])
 
 object Task
 {
+   /*Region sobre categorias*/
+
+
+   def tasksFromUserCategory(user: String, category_name: String): List[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task, category_task where id = task_id and category_owner = {category_owner} and category_name = {category_name}").
+         on('category_owner -> user, 'category_name -> category_name).as(task *)
+   }
+
+
+   /*END Region sobre categorias*/
+
    /*Region acoplada a User*/
 
 

@@ -47,6 +47,13 @@ class CategorySpecSpec extends Specification with JsonMatchers {
          Category.exists(names(0), user.nick) === true
       }
 
+      "Asociar correctamente la tarea a una categoría" in new WithApplication() {
+         Category.create(names(0), user.nick)
+
+         var id = Task.create("test", user.nick, None).get
+         Category.addTaskToCategory(id, names(0), user.nick) === 1
+      }
+
    }
 
 }

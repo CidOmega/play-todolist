@@ -34,6 +34,24 @@ class TaskSpec extends Specification with JsonMatchers {
       Some(new Timestamp(848876400000L)),//848876400000L == 25/11/1996
       Some(new Timestamp(880412400000L)))//880412400000L == 25/11/1997
 
+   "Task sobre categorias" should{
+
+      val categorias = Array("todo", "remember", "meeting")
+
+      "Devolver las tareas de cierta categoría correctamente" in new WithApplication() {
+         Category.create(categorias(0), userNicks(0))
+
+         var id = Task.create(labels(0), userNicks(0), None).get
+         Category.addTaskToCategory(id, categorias(0), userNicks(0))
+
+         id = Task.create(labels(0), userNicks(0), None).get
+         Category.addTaskToCategory(id, categorias(0), userNicks(0))
+
+         Task.tasksFromUserCategory(userNicks(0), categorias(0)).length === 2
+      }
+
+   }
+
 
    "Task sobre tareas de usuarios" should {
 

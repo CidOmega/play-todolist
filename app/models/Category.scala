@@ -32,6 +32,12 @@ object Category
       }
    }
 
+   def addTaskToCategory(task_id: Long, category_name: String, category_owner: String) = DB.withConnection
+   {
+      implicit c => SQL("insert into category_task (category_name, category_owner, task_id) values ({category_name}, {category_owner}, {task_id})").
+         on('category_name -> category_name, 'category_owner -> category_owner, 'task_id -> task_id).executeUpdate()
+   }
+
    /**
     * Conversor SQL a Category
     */
