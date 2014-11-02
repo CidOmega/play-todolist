@@ -54,6 +54,18 @@ class CategorySpecSpec extends Specification with JsonMatchers {
          Category.addTaskToCategory(id, names(0), user.nick) === 1
       }
 
+      "Devolver las categorias de una tarea" in new WithApplication() {
+         for(i <- 0 to 2)
+            Category.create(names(i), user.nick)
+
+         var id = Task.create("test", user.nick, None).get
+
+         for(i <- 0 to 2)
+            Category.addTaskToCategory(id, names(i), user.nick)
+
+         Category.categoriesFromTask(id).length === 3
+      }
+
    }
 
 }
