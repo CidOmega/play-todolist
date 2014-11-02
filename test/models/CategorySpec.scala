@@ -39,6 +39,14 @@ class CategorySpecSpec extends Specification with JsonMatchers {
          cat must beNone
       }
 
+      "Devolver correctamente la existencia de una categoría" in new WithApplication() {
+         Category.exists(names(0), user.nick) === false
+
+         Category.create(names(0), user.nick)
+
+         Category.exists(names(0), user.nick) === true
+      }
+
    }
 
 }

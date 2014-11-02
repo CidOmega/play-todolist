@@ -23,6 +23,15 @@ object Category
          on('name -> name, 'owner -> owner).as(category singleOpt)
    }
 
+   def exists(name: String, owner: String) : Boolean =
+   {
+      readOption(name, owner) match
+      {
+         case Some(_) => true
+         case None => false
+      }
+   }
+
    /**
     * Conversor SQL a Category
     */
