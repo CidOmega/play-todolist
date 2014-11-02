@@ -22,6 +22,14 @@ class CategorySpecSpec extends Specification with JsonMatchers {
          Category.create(names(0), user.nick) === 1
       }
 
+      "Leer correctamente una categoría asociada a un usuario" in new WithApplication() {
+         Category.create(names(0), user.nick)
+
+         val cat = Category.readOption(names(0), user.nick)
+
+         cat must beSome(Category(names(0), user))
+      }
+
    }
 
 }
