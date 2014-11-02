@@ -16,15 +16,20 @@ class ApplicationSpec extends Specification {
   "Application" should {
 
     "send 404 on a bad request" in new WithApplication{
-      route(FakeRequest(GET, "/boum")) must beNone
+      status(route(FakeRequest(GET, "/boum")).get) must equalTo(NOT_FOUND)
     }
 
     "render the index page" in new WithApplication{
-      val home = route(FakeRequest(GET, "/")).get
+      val home = route(FakeRequest(GET, "/ui")).get
 
       status(home) must equalTo(OK)
       contentType(home) must beSome.which(_ == "text/html")
-      contentAsString(home) must contain ("Your new application is ready.")
+      val content = contentAsString(home)
+      content must contain ("Add a new task")
+      content must contain (" task(s)")
+      content must contain ("label")
+      content must contain ("deadend")
+      content must contain ("Date (&#x27;dd/MM/yyyy&#x27;)")
     }
   }
 }
