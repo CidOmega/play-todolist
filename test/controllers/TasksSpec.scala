@@ -60,5 +60,34 @@ class TasksSpcec extends Specification with JsonMatchers{
          contentType(home) must beSome.which(_ == "text/plain")
       }
 
+      "Devolver un texto de verificacion con el id de la tarea borrada" in new WithApplication() {
+         var idNoBorrado: Array[Long] = new Array[Long](2);
+         idNoBorrado(0) = Task.create(labels(0), userNicks(0), fechas(0)).get
+         val Some(id) = Task.create(labels(0), userNicks(0), fechas(0))
+         idNoBorrado(1) = Task.create(labels(0), userNicks(0), fechas(0)).get
+
+         val home = route(FakeRequest(DELETE, "/tasks/" + id)).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "text/plain")
+
+         contentAsString(home) must endWith("" + id)
+
+         Task.readOption(idNoBorrado(0)) must beSome
+         Task.readOption(id) must beNone
+         Task.readOption(idNoBorrado(1)) must beSome
+      }
+
+      "Devolver 404 si la tarea no existe" in new WithApplication() {
+         val Some(id) = Task.create(labels(0), userNicks(0), fechas(0))
+
+         val home = route(FakeRequest(DELETE, "/tasks/" + (id + 100))).get
+
+         status(home) must equalTo(NOT_FOUND)
+         contentType(home) must beSome.which(_ == "text/plain")
+
+         Task.readOption(id) must beSome
+      }
+
    }
 }
