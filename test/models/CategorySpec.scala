@@ -82,6 +82,28 @@ class CategorySpecSpec extends Specification with JsonMatchers {
          Category.categoriesFromTask(id).length === 2
       }
 
+      "Actualizar las categorias de una tarea" in new WithApplication() {
+         for(i <- 0 to 2)
+            Category.create(names(i), user.nick)
+
+         var id = Task.create("test", user.nick, None).get
+
+         var categories = Category(names(0), user) :: Category(names(1), user) :: Category(names(2), user) :: Nil
+
+         while (!categories.isEmpty)
+         {
+            Category.updateTaskCategories(id, categories) === categories.length
+
+            Category.categoriesFromTask(id).length === categories.length
+
+            categories = categories.tail
+         }
+
+         Category.updateTaskCategories(id, Nil)
+
+         Category.categoriesFromTask(id).length === 0
+      }
+
       "Generar correctamente el json" in new WithApplication() {
          var jsonSring = Json.stringify(Json.toJson(Category(names(0), user)))
 
