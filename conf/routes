@@ -40,5 +40,8 @@ GET     /:owner/tasks/ends_today            controllers.Users.getTasksEndsToday(
 GET     /:owner/tasks/outdate                 controllers.Users.getTasksOutdate(owner: String)
 GET     /:owner/tasks/no_deadend            controllers.Users.getTasksWithoutDeadend(owner: String)
 
+#Categorias
+POST    /:owner/categories                  controllers.UserCategories.createUserCategory(owner: String)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file            controllers.Assets.at(path="/public", file)

@@ -24,6 +24,12 @@ object Global extends Controller
             )(Category.apply)(Category.unapply))
       )(Task.apply)(Task.unapply))
 
+   val categoryForm = Form(mapping
+      (
+         "name" -> nonEmptyText,
+         "owner" -> ignored(User("Nadie"))
+      )(Category.apply)(Category.unapply))
+
    val dateQueryStringFormat = "dd-MM-yyyy"
    val dateQueryStringParser: java.text.SimpleDateFormat = new java.text.SimpleDateFormat(dateQueryStringFormat)
    def dateQueryStringParse(queryString: String): Either[Result, Date] =
