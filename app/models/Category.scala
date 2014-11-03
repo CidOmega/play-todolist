@@ -29,6 +29,12 @@ object Category
          on('task_id -> task_id).as(category *)
    }
 
+   def categoriesFromUser(owner: String): List[Category] = DB.withConnection
+   {
+      implicit c => SQL("select * from category where owner = {owner}").
+         on('owner -> owner).as(category *)
+   }
+
    def exists(name: String, owner: String) : Boolean =
    {
       readOption(name, owner) match
