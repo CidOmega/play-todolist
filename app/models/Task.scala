@@ -8,10 +8,22 @@ import play.api.libs.json._
 
 import java.util.{Date}
 
-case class Task(id: Long, label: String, owner: User, deadend: Option[Date])
+case class Task(id: Long, label: String, owner: User, deadend: Option[Date], categories: List[Category] = Nil)
 
 object Task
 {
+   /*Region sobre categorias*/
+
+
+   def tasksFromUserCategory(user: String, category_name: String): List[Task] = DB.withConnection
+   {
+      implicit c => SQL("select * from task, category_task where id = task_id and category_owner = {category_owner} and category_name = {category_name}").
+         on('category_owner -> user, 'category_name -> category_name).as(task *)
+   }
+
+
+   /*END Region sobre categorias*/
+
    /*Region acoplada a User*/
 
 
@@ -150,7 +162,7 @@ object Task
    {
       get[Long]("id") ~ get[String]("label") ~ get[String]("taskowner") ~ get[Option[Date]]("deadend") map
       {
-         case id~label~taskowner~deadend => Task(id, label, User.read(taskowner), deadend)
+         case id~label~taskowner~deadend => Task(id, label, User.read(taskowner), deadend, Category.categoriesFromTask(id))
       }
    }
 
@@ -166,7 +178,8 @@ object Task
          "id" -> task.id,
          "label" -> task.label,
          "owner" -> task.owner,
-         "deadend" -> JsString(task.deadend.map(formater.format(_)).getOrElse(null))
+         "deadend" -> JsString(task.deadend.map(formater.format(_)).getOrElse(null)),
+         "categories" -> task.categories
       )
    }
 
