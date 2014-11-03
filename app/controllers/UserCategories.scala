@@ -12,6 +12,18 @@ import models._
 object UserCategories extends Controller
 {
 
+   def getUserCategory(owner:String) = Action
+   {
+      if(User.Exists(owner))
+      {
+         Ok(Json.toJson(Category.categoriesFromUser(owner)))
+      }
+      else
+      {
+         NotFound("Usuario solicitado no encontrado")
+      }
+   }
+
    def createUserCategory(owner:String) = Action
    {
       implicit request => Global.categoryForm.bindFromRequest.fold(

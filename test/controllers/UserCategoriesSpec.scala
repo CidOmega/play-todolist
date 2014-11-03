@@ -29,8 +29,35 @@ class UserCategoriesSpec extends Specification with JsonMatchers {
 
    val categories = Array("todo", "remember", "meeting")
 
+   def mustBeJsArrayAndHasLength(json:JsValue, expected: Int): Unit =
+   {
+      json match {
+         case arr: JsArray => arr.value.length === expected
+         case _ => throw new Exception("JsValue must be an array but it isn't")
+      }
+   }
+
 
    "Categorias de usuarios" should{
+
+      "GET /:owner/categories debe debolver OK y le josn del array de categorias dle user" in new WithApplication() {
+         Category.create(categories(0), userNicks(0))
+         Category.create(categories(1), userNicks(0))
+
+         val home = route(FakeRequest(GET, "/" + userNicks(0) + "/categories")).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "application/json")
+
+         mustBeJsArrayAndHasLength(contentAsJson(home), 2)
+      }
+
+      "GET /:owner/categories debe debolver 404 si le user no existe" in new WithApplication() {
+         val home = route(FakeRequest(GET, "/" + noUserNick + "/categories")).get
+
+         status(home) must equalTo(NOT_FOUND)
+         contentType(home) must beSome.which(_ == "text/plain")
+      }
 
       "POST /:owner/categories debe crear la categoria al usuario y devolver su json y estado CREATED" in new WithApplication() {
          Category.exists(categories(0), userNicks(0)) must beFalse
