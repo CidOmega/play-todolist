@@ -186,5 +186,53 @@ class UserCategoriesSpec extends Specification with JsonMatchers {
          Task.tasksFromUserCategory(userNicks(0), categories(0)).length === 0
       }
 
+      "DELETE /:owner/categories/:category/tasks debe devolver la tarea en json (habiendo sido eliminada de la categoría)" in new WithApplication() {
+         Category.create(categories(0), userNicks(0))
+         var id = Task.create(labels(0), userNicks(0), None).get
+         Category.addTaskToCategory(id, categories(0), userNicks(0))
+
+         val home = route(FakeRequest(DELETE, "/" + userNicks(0) + "/categories/" + categories(0) + "/tasks").
+            withFormUrlEncodedBody(("id", id.toString))).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "application/json")
+
+         Task.tasksFromUserCategory(userNicks(0), categories(0)).length === 0
+
+         Json.stringify(contentAsJson(home)) must not */("name" -> categories(0))
+      }
+
+      "DELETE /:owner/categories/:category/tasks debe devolver bad request si la tarea y la categoria no son del mismo usuario" in new WithApplication() {
+         Category.create(categories(0), userNicks(0))
+         var id = Task.create(labels(0), userNicks(1), None).get
+
+         val home = route(FakeRequest(DELETE, "/" + userNicks(0) + "/categories/" + categories(0) + "/tasks").
+            withFormUrlEncodedBody(("id", id.toString))).get
+
+         status(home) must equalTo(BAD_REQUEST)
+         contentType(home) must beSome.which(_ == "text/plain")
+      }
+
+      "DELETE /:owner/categories/:category/tasks debe devolver bad request si la tarea no pertenecía a la categoria" in new WithApplication() {
+         Category.create(categories(0), userNicks(0))
+         var id = Task.create(labels(0), userNicks(1), None).get
+
+         val home = route(FakeRequest(DELETE, "/" + userNicks(0) + "/categories/" + categories(0) + "/tasks").
+            withFormUrlEncodedBody(("id", id.toString))).get
+
+         status(home) must equalTo(BAD_REQUEST)
+         contentType(home) must beSome.which(_ == "text/plain")
+      }
+
+      "DELETE /:owner/categories/:category/tasks debe devolver bad request si la tarea no existe" in new WithApplication() {
+         Category.create(categories(0), userNicks(0))
+
+         val home = route(FakeRequest(DELETE, "/" + userNicks(0) + "/categories/" + categories(0) + "/tasks").
+            withFormUrlEncodedBody(("id", (-1L).toString))).get
+
+         status(home) must equalTo(BAD_REQUEST)
+         contentType(home) must beSome.which(_ == "text/plain")
+      }
+
    }
 }
