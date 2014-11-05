@@ -64,10 +64,10 @@ class UserCategoriesSpec extends Specification with JsonMatchers {
 
          val home = route(FakeRequest(POST, "/" + userNicks(0) + "/categories").withFormUrlEncodedBody(("name", categories(0)))).get
 
-         Category.exists(categories(0), userNicks(0)) must beTrue
-
          status(home) must equalTo(CREATED)
          contentType(home) must beSome.which(_ == "application/json")
+
+         Category.exists(categories(0), userNicks(0)) must beTrue
 
          val jsonString = Json.stringify(contentAsJson(home))
 
@@ -79,10 +79,10 @@ class UserCategoriesSpec extends Specification with JsonMatchers {
 
          val home = route(FakeRequest(POST, "/" + noUserNick + "/categories").withFormUrlEncodedBody(("name", categories(0)))).get
 
-         Category.exists(categories(0), noUserNick) must beFalse
-
          status(home) must equalTo(NOT_FOUND)
          contentType(home) must beSome.which(_ == "text/plain")
+
+         Category.exists(categories(0), noUserNick) must beFalse
       }
 
       "POST /:owner/categories debe devolver bad request si no se pasa el nombre de la categoria" in new WithApplication() {
@@ -90,10 +90,10 @@ class UserCategoriesSpec extends Specification with JsonMatchers {
 
          val home = route(FakeRequest(POST, "/" + userNicks(0) + "/categories").withFormUrlEncodedBody(("nombre", categories(0)))).get
 
-         Category.exists(categories(0), userNicks(0)) must beFalse
-
          status(home) must equalTo(BAD_REQUEST)
          contentType(home) must beSome.which(_ == "text/plain")
+
+         Category.exists(categories(0), userNicks(0)) must beFalse
       }
 
    }
