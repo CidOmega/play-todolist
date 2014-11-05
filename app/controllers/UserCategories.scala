@@ -41,6 +41,25 @@ object UserCategories extends Controller
       }
    }
 
+   def getUserCategoryTasks(owner:String, categoryName: String) = Action
+   {
+      if(User.Exists(owner))
+      {
+         if(Category.exists(categoryName, owner))
+         {
+            Ok(Json.toJson(Task.tasksFromUserCategory(owner, categoryName)))
+         }
+         else
+         {
+            NotFound("Categoria no encontrada")
+         }
+      }
+      else
+      {
+         NotFound("Usuario solicitado no encontrado")
+      }
+   }
+
    def createUserCategory(owner:String) = Action
    {
       implicit request => Global.categoryForm.bindFromRequest.fold(

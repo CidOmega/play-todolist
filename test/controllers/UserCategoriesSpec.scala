@@ -112,5 +112,23 @@ class UserCategoriesSpec extends Specification with JsonMatchers {
          Json.stringify(contentAsJson(home)) must /("name" -> categories(0))
       }
 
+      "GET /:owner/categories/:category/tasks debe devolver las tareas pertenecientes a la categoria en json" in new WithApplication() {
+         Category.create(categories(0), userNicks(0))
+         Category.create(categories(1), userNicks(0))
+
+         for(i <- 0 to 1)
+         {
+            var id = Task.create(labels(i), userNicks(0), None).get
+            Category.addTaskToCategory(id, categories(0), userNicks(0))
+         }
+
+         val home = route(FakeRequest(GET, "/" + userNicks(0) + "/categories/" + categories(0) + "/tasks")).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "application/json")
+
+         mustBeJsArrayAndHasLength(contentAsJson(home), 2)
+      }
+
    }
 }
