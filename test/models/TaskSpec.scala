@@ -34,6 +34,35 @@ class TaskSpec extends Specification with JsonMatchers {
       Some(new Timestamp(848876400000L)),//848876400000L == 25/11/1996
       Some(new Timestamp(880412400000L)))//880412400000L == 25/11/1997
 
+   val categorias = Array("todo", "remember", "meeting")
+
+   "Task sobre categorias" should{
+
+      "Devolver las tareas de cierta categoría correctamente" in new WithApplication() {
+         Category.create(categorias(0), userNicks(0))
+
+         var id = Task.create(labels(0), userNicks(0), None).get
+         Category.addTaskToCategory(id, categorias(0), userNicks(0))
+
+         id = Task.create(labels(0), userNicks(0), None).get
+         Category.addTaskToCategory(id, categorias(0), userNicks(0))
+
+         Task.tasksFromUserCategory(userNicks(0), categorias(0)).length === 2
+      }
+
+      "Las tareas deben contener correctamente sus categorias" in new WithApplication() {
+         for(i <- 0 to 1)
+            Category.create(categorias(i), userNicks(0))
+
+         var id = Task.create(labels(0), userNicks(0), None).get
+         for(i <- 0 to 1)
+            Category.addTaskToCategory(id, categorias(i), userNicks(0))
+
+         Task.readOption(id).get.categories.length === 2
+      }
+
+   }
+
 
    "Task sobre tareas de usuarios" should {
 
@@ -237,6 +266,13 @@ class TaskSpec extends Specification with JsonMatchers {
          json must /("label" -> labels(0))
          json must /("owner") /("nick" -> userNicks(0))
          json must /("deadend" -> "25/11/1993")
+      }
+
+      "Contener correctamente sus categorias" in new WithApplication() {
+         val json = Json.stringify(Json.toJson(Task(1, "", User(userNicks(0)), None, Category(categorias(0), User("")) :: Category(categorias(1), User("")) :: Nil)))
+
+         json must /("categories") */("name" -> categorias(0))
+         json must /("categories") */("name" -> categorias(1))
       }
 
    }
