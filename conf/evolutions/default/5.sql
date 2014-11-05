@@ -2,6 +2,8 @@
 
 # --- !Ups
 
+ALTER TABLE task ADD CONSTRAINT unique_task_id UNIQUE(id);
+
 CREATE TABLE category_task(
    category_owner varchar(255) NOT NULL,
    category_name varchar(255) NOT NULL,
@@ -14,3 +16,5 @@ CREATE TABLE category_task(
 # --- !Downs
 
 DROP TABLE category_task;
+
+ALTER TABLE task DROP CONSTRAINT unique_task_id;
