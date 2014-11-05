@@ -97,4 +97,20 @@ class UserCategoriesSpec extends Specification with JsonMatchers {
       }
 
    }
+
+   "Categoria (concreta)" should{
+
+      "GET /:owner/categories/:category debe devolver la categoria en json" in new WithApplication() {
+         Category.create(categories(0), userNicks(0))
+         Category.create(categories(1), userNicks(0))
+
+         val home = route(FakeRequest(GET, "/" + userNicks(0) + "/categories/" + categories(0))).get
+
+         status(home) must equalTo(OK)
+         contentType(home) must beSome.which(_ == "application/json")
+
+         Json.stringify(contentAsJson(home)) must /("name" -> categories(0))
+      }
+
+   }
 }

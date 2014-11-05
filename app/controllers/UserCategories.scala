@@ -12,11 +12,28 @@ import models._
 object UserCategories extends Controller
 {
 
-   def getUserCategory(owner:String) = Action
+   def getUserCategories(owner:String) = Action
    {
       if(User.Exists(owner))
       {
          Ok(Json.toJson(Category.categoriesFromUser(owner)))
+      }
+      else
+      {
+         NotFound("Usuario solicitado no encontrado")
+      }
+   }
+
+   def getUserCategory(owner:String, categoryName: String) = Action
+   {
+      if(User.Exists(owner))
+      {
+         Category.readOption(categoryName, owner) match
+         {
+            case Some(c) => Ok(Json.toJson(c))
+            case None => NotFound("Categoria no encontrada")
+         }
+
       }
       else
       {
