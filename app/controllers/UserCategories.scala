@@ -60,6 +60,48 @@ object UserCategories extends Controller
       }
    }
 
+   def addTaskToUserCategory(owner:String, categoryName: String) = Action
+   {
+      implicit request => Global.modifyTaskForm.bindFromRequest.fold(
+         errors => BadRequest("Datos incorrectos"),
+         task => {
+            if (User.Exists(owner))
+            {
+               if (Category.exists(categoryName, owner))
+               {
+                  Task.readOption(task.id) match
+                  {
+                     case Some(dbTask) =>
+                        if(dbTask.owner.nick != owner)
+                        {
+                           BadRequest("La tarea no es del usuario dueño de la categoria")
+                        }
+                        else if(dbTask.categories.contains(Category(categoryName, User(owner))))
+                        {
+                           BadRequest("La tarea ya pertenece a la categoría")
+                        }
+                        else
+                        {
+                           Category.addTaskToCategory(task.id, categoryName, owner)
+                           Ok(Json.toJson(Task.readOption(task.id)))
+                        }
+
+                     case None => BadRequest("La tarea no existe")
+                  }
+               }
+               else
+               {
+                  BadRequest("La categoria no existe")
+               }
+            }
+            else
+            {
+               NotFound("Usuario solicitado no encontrado")
+            }
+         }
+      )
+   }
+
    def createUserCategory(owner:String) = Action
    {
       implicit request => Global.categoryForm.bindFromRequest.fold(

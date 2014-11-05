@@ -24,6 +24,19 @@ object Global extends Controller
             )(Category.apply)(Category.unapply))
       )(Task.apply)(Task.unapply))
 
+   val modifyTaskForm = Form(mapping
+      (
+            "id" -> longNumber,
+            "label" -> default(text, "default"),
+            "owner" -> ignored(User("default")),
+            "deadend" -> optional(date("dd/MM/yyyy")),
+            "categories" -> list(mapping
+               (
+                     "name" -> nonEmptyText,
+                     "owner" -> ignored(User("mismo que la tarea"))
+                  )(Category.apply)(Category.unapply))
+         )(Task.apply)(Task.unapply))
+
    val categoryForm = Form(mapping
       (
          "name" -> nonEmptyText,
